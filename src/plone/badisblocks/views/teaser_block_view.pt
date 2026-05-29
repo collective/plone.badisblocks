@@ -1,0 +1,23 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class">
+  <a class="teaser-item"
+     tal:attributes="href view/href"
+     tal:omit-tag="not:view/href">
+    <span class="image-wrapper" tal:condition="view/image_src">
+      <img class="teaser-image"
+           loading="lazy"
+           tal:attributes="src view/image_src;
+                          srcset view/image_srcset;
+                          alt view/image_alt" />
+    </span>
+    <span class="content">
+      <span class="headline"
+            tal:condition="view/head_title"
+            tal:content="view/head_title">kicker</span>
+      <h2 tal:content="view/title">title</h2>
+      <p class="description"
+         tal:condition="view/description"
+         tal:content="view/description">description</p>
+    </span>
+  </a>
+</div>

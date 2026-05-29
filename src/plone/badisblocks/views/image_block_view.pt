@@ -1,0 +1,11 @@
+<p xmlns:tal="http://xml.zope.org/namespaces/tal"
+   class="block image"
+   tal:condition="view/src">
+  <img class="image-richtext"
+       loading="lazy"
+       tal:attributes="src view/src;
+                       srcset view/srcset;
+                       alt view/alt;
+                       width view/width;
+                       height view/height" />
+</p>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<object name="News Item" meta_type="Dexterity FTI">
+  <property name="default_view">blocks-view</property>
+  <property name="view_methods" purge="False">
+    <element value="blocks-view" />
+  </property>
+</object>

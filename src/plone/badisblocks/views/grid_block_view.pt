@@ -1,0 +1,11 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     class="block grid-wrapper">
+  <h2 class="headline"
+      tal:condition="view/headline"
+      tal:content="view/headline">headline</h2>
+  <div tal:attributes="class string:block grid row row-cols-1 row-cols-md-${view/column_count}">
+    <div class="col grid-column"
+         tal:repeat="column view/columns"
+         tal:content="structure column">column</div>
+  </div>
+</div>

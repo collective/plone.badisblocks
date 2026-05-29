@@ -1,0 +1,153 @@
+# Spec: Chameleon renderer for Volto/Seven blocks in Classic UI (Badis UI)
+
+## Goal
+
+Render content created by the Volto/Seven block editor inside Plone Classic UI
+("Badis UI") using Chameleon page templates. No frontend build step — pure
+server-side rendering through BrowserViews and `.pt` templates.
+
+Reference implementation (SvelteKit prototype) being ported:
+`/home/maik/develop/svelteplayground/svolto/` — see `src/lib/RenderBlocks.svelte`,
+`RenderBlock.svelte`, `blocks/index.ts`, and `blocks/{title,description,image,slate,grid}/`.
+
+## Data source
+
+Block-enabled content carries the `volto.blocks` behavior
+(`plone.restapi.behaviors.IBlocks`), which stores two attributes directly on the
+content object:
+
+- `context.blocks` — `dict` mapping a block UID → block data (`{"@type": ..., ...}`)
+- `context.blocks_layout` — `{"items": [<uid>, <uid>, ...]}` giving render order
+
+A BrowserView reads these directly; no REST round-trip.
+
+## Architecture — named-BrowserView registry
+
+Mirrors the svolto `blocksConfig` registry in Zope idiom. One entry view dispatches
+by block `@type` to a per-type view named `@@block-<type>`; unknown types fall back
+to `@@block-default`. The grid view re-uses the same dispatch over its own nested
+blocks (the "nested views" requirement).
+
+```
+@@blocks-view                 entry; iterates blocks_layout["items"]
+ ├─ @@block-title             context.title       -> <h1 class="documentFirstHeading">
+ ├─ @@block-description       context.description -> <p class="documentDescription">
+ ├─ @@block-slate             data["value"]       -> Python serializer -> structure
+ ├─ @@block-image             data image_scales/url/alt -> <img srcset>
+ ├─ @@block-grid              data blocks/blocks_layout -> re-dispatch (nested)
+ └─ @@block-default           fallback
+```
+
+### Dispatch
+
+- `BaseBlockView(BrowserView)` — carries `data`, `block_id`, `block_type` set by the
+  dispatcher before render.
+- `BlockDispatchMixin` — provides:
+  - `render_blocks(blocks, items)` → concatenated HTML of all blocks in order.
+  - `render_block(block_id, blocks)` → resolve `@type`, look up the sub-view via
+    `getMultiAdapter((context, request), name="block-<type>")` (fallback
+    `block-default`), set `.data`/`.block_id`/`.block_type`, return `view()`.
+- `BlocksView(BrowserView, BlockDispatchMixin)` — entry point `@@blocks-view`. Template
+  iterates `view.block_ids` and injects each via `tal:content="structure ..."`.
+- `GridBlockView(BaseBlockView, BlockDispatchMixin)` — re-dispatches over
+  `data["blocks"]` / `data["blocks_layout"]["items"]`.
+
+## Block data enrichment (stored vs serialized) — important
+
+`context.blocks` is the *raw stored* form, which is under-populated for rendering:
+image blocks hold `url: "resolveuid/<uid>"` with **no** `image_scales`; slate links
+and teaser hrefs hold unresolved UIDs. plone.restapi only enriches these at REST GET
+time via `IBlockFieldSerializationTransformer` adapters (resolve UIDs → urls, attach
+`image_scales` from the catalog brain, etc.).
+
+So `BlocksView.render()` runs those same transformers first via
+`views/serializer.py:serialize_blocks` (the exact logic of restapi's
+`BlocksJSONFieldSerializer`, recursing into nested grid blocks through `visit_blocks`).
+Without this, image blocks render empty. The transformers are looked up via
+`zope.globalrequest.getRequest()`, which is set during a real request (and must be set
+manually in tests).
+
+## Per-block specs
+
+| View | Reads | Renders |
+|---|---|---|
+| `@@block-title` | `context.title` | `<h1 class="documentFirstHeading">` |
+| `@@block-description` | `context.description` (or block `data`) | `<p class="documentDescription">` |
+| `@@block-slate` | `data["value"]` (node tree) | escaped HTML via serializer |
+| `@@block-image` | `data["image_scales"]`, `data["url"]`, `data["alt"]` | `<img>` with `srcset` |
+| `@@block-gridBlock` | `data["headline"]`, `data["blocks"]`, `data["blocks_layout"]` | nested blocks in a Bootstrap `row row-cols-1 row-cols-md-{n}` (Barceloneta ships the CSS; responsive, stacks on mobile) |
+| `@@block-teaser` | `data["href"][0]` target + block fields | optional image, kicker, title, description, linked to target |
+| `@@block-default` | — | nothing visible (type name in dev) |
+
+### Slate serializer (the hard part)
+
+Volto stores slate as a recursive JSON node tree. Inline formatting (strong/em/link)
+are **element** nodes with `children`, not leaf marks; text nodes carry only `text`.
+
+`browser/slate.py` walks the tree:
+
+- text node (`"text" in node`) → `html.escape(node["text"])`
+- element node → whitelist `node["type"]` to a tag; recurse over `children`;
+  unknown types are dropped (children still rendered) — never emit raw editor markup.
+- Whitelisted tags: `p, h2, h3, h4, h5, h6, blockquote, ul, ol, li, strong, em,
+  u/underline, s/strikethrough, del, sub, sup, code, a (link), br`.
+- Links: emit `href` from `node["data"]["url"]` as-is; Plone resolves
+  `resolveuid/<uid>` via traversal.
+
+Returns a plain string; template injects with `tal:content="structure view/render"`.
+**Security:** every text leaf is escaped and only whitelisted tags are emitted, so no
+unsanitized editor HTML reaches the page.
+
+### Image
+
+Base path = `data["url"]` with host stripped to a path. `image_scales["image"][0]`
+gives `download`, `width`, `height`, and `scales` (each `{download, width}`). Build
+`src = base + "/" + download` and `srcset` from the scales. `alt` from `data["alt"]`.
+
+## Entry-point wiring (replace default view immediately)
+
+- `profiles/default/types.xml` lists `Document`, `News Item`, `Event`; the matching
+  per-type files set `default_view` → `blocks-view` and append it to `view_methods`
+  (`purge="False"`).
+- **Filename rule:** GenericSetup maps spaces in the FTI id to underscores for the
+  filename, so the News Item file must be `types/News_Item.xml` (not `News Item.xml`).
+- **No upgrade step yet:** the addon is unreleased/greenfield, so the initial profile
+  install covers the FTI change. Add a `plonecli add upgrade_step` (reimporting the
+  `typeinfo` step) only once these FTI changes must reach already-installed sites.
+- **Caveat:** this makes *all* Documents/News Items/Events render through
+  `@@blocks-view`. Content without `blocks_layout` renders an empty content-core (the
+  renderer returns `""`). Fine for a blocks-first site; revisit with a fallback if the
+  site mixes classic richtext content.
+
+## Testing (pytest-plone, already configured)
+
+Per-block tests under `tests/`: build a Document with representative
+`blocks`/`blocks_layout`, render `@@blocks-view`, assert HTML — heading text, escaped
+slate output, image `srcset`, nested grid columns, unknown-type fallback. Real tests
+only (no throwaway verification scripts). Run via `plonecli test` / `uv run`.
+
+## Implementation phases
+
+- **Phase 0** — Scaffold views with plonecli (`blocks-view`, `block-default`,
+  `block-title`, `block-description`, `block-slate`, `block-image`, `block-grid`).
+- **Phase 1** — Dispatch core (`BaseBlockView`, `BlockDispatchMixin`, `BlocksView`).
+- **Phase 2** — Simple blocks: title, description, slate (+ serializer), image, default.
+- **Phase 3** — Grid (nested re-dispatch).
+- **Phase 4** — Wire `blocks-view` as default view via FTI (`types.xml` +
+  `types/{Document,News_Item,Event}.xml`).
+- **Phase 5** — Tests per block.
+
+All phases implemented; full suite green (`uv run --extra test pytest`) and
+`ruff check` clean.
+
+## Out of scope (first pass; add later as new named views)
+
+listing, video, maps, slateTable, html, toc, column/listing variations.
+
+## Implemented block views
+
+title, description, slate, image, gridBlock (nested), teaser, default (fallback).
+`@@block-teaser` reads the resolved target from `data["href"][0]` (or block fields
+when `overwrite` is true), renders an optional image (from `preview_image` or the
+target's `image_scales[image_field]`), kicker, title, description, and links to the
+target path; with no resolvable target it renders title/description without a link.

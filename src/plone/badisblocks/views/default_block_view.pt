@@ -1,0 +1,6 @@
+<tal:block xmlns:tal="http://xml.zope.org/namespaces/tal"
+           omit-tag="">
+  <div class="block block-unknown"
+       tal:attributes="data-block-type view/block_type"
+       tal:content="nothing"></div>
+</tal:block>

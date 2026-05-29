@@ -1,0 +1,3 @@
+<p xmlns:tal="http://xml.zope.org/namespaces/tal"
+   class="documentDescription block description"
+   tal:content="context/Description">Description</p>

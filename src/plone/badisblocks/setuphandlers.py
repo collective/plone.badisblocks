@@ -1,4 +1,5 @@
 """Setup handlers for plone.badisblocks."""
+
 from Products.CMFPlone.interfaces import INonInstallable
 from zope.interface import implementer
 

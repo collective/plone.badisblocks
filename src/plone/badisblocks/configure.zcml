@@ -32,4 +32,7 @@
       handler="plone.badisblocks.setuphandlers.uninstall"
       />
 
+
+  <include package=".views" />
+
 </configure>

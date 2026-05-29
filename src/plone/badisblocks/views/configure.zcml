@@ -1,0 +1,78 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="plone.badisblocks">
+
+  <browser:page
+      name="blocks-view"
+      for="*"
+      class=".blocks_view.BlocksView"
+      template="blocks_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-default"
+      for="*"
+      class=".default_block_view.DefaultBlockView"
+      template="default_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-title"
+      for="*"
+      class=".title_block_view.TitleBlockView"
+      template="title_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-description"
+      for="*"
+      class=".description_block_view.DescriptionBlockView"
+      template="description_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-slate"
+      for="*"
+      class=".slate_block_view.SlateBlockView"
+      template="slate_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-image"
+      for="*"
+      class=".image_block_view.ImageBlockView"
+      template="image_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-gridBlock"
+      for="*"
+      class=".grid_block_view.GridBlockView"
+      template="grid_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-teaser"
+      for="*"
+      class=".teaser_block_view.TeaserBlockView"
+      template="teaser_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-listing"
+      for="*"
+      class=".listing_block_view.ListingBlockView"
+      template="listing_block_view.pt"
+      permission="zope2.View"
+      />
+
+</configure>

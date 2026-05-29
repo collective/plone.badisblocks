@@ -1,7 +1,9 @@
 """Testing setup for plone.badisblocks."""
+
 import os
 
 import plone.app.theming
+import plone.badisblocks
 import plone.restapi
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
@@ -9,8 +11,6 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import SITE_OWNER_PASSWORD
 from plone.testing.zope import WSGI_SERVER_FIXTURE
-
-import plone.badisblocks
 
 
 class PloneBadisblocksLayer(PloneSandboxLayer):

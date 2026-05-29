@@ -1,0 +1,65 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class">
+
+  <tal:headline tal:condition="view/headline">
+    <h2 class="headline"
+        tal:condition="python:view.headline_tag == 'h2'"
+        tal:content="view/headline">headline</h2>
+    <h3 class="headline"
+        tal:condition="python:view.headline_tag == 'h3'"
+        tal:content="view/headline">headline</h3>
+  </tal:headline>
+
+  <p class="listing-empty"
+     tal:condition="not:view/items">No results found.</p>
+
+  <div class="listing-summary"
+       tal:condition="python:bool(view.items) and view.variation == 'summary'">
+    <article class="listing-card"
+             tal:repeat="item view/items">
+      <a class="card-image-link"
+         tal:condition="item/image"
+         tal:attributes="href item/url">
+        <img class="card-image"
+             loading="lazy"
+             tal:attributes="src item/image/src;
+                            srcset item/image/srcset;
+                            sizes item/image/sizes;
+                            width item/image/width;
+                            height item/image/height;
+                            alt item/image/alt" />
+      </a>
+      <div class="card-content">
+        <h3 class="card-title">
+          <a tal:attributes="href item/url"
+             tal:content="item/title">title</a>
+        </h3>
+        <p class="card-description"
+           tal:condition="item/description"
+           tal:content="item/description">description</p>
+      </div>
+    </article>
+  </div>
+
+  <ul class="listing-items"
+      tal:condition="python:bool(view.items) and view.variation != 'summary'">
+    <li class="listing-item"
+        tal:repeat="item view/items">
+      <a class="listing-item-link"
+         tal:attributes="href item/url">
+        <span class="listing-item-title"
+              tal:content="item/title">title</span>
+      </a>
+      <p class="listing-item-description"
+         tal:condition="item/description"
+         tal:content="item/description">description</p>
+    </li>
+  </ul>
+
+  <div class="listing-footer"
+       tal:condition="view/show_link_more">
+    <a class="link-more"
+       tal:attributes="href view/link_more_href"
+       tal:content="view/link_more_title">more</a>
+  </div>
+</div>

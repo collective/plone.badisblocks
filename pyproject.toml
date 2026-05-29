@@ -72,6 +72,7 @@ zope_setup = true
 content_types = []
 behaviors = []
 services = []
+views = ["blocks-view", "block-default", "block-title", "block-description", "block-slate", "block-image", "block-grid", "block-teaser", "block-listing"]
 
 
 [tool.plone.project.settings]
@@ -79,6 +80,7 @@ plone_version = "6.2.0"
 distribution = "plone.classicui"
 db_storage = "instance"
 base_path = "var"
+instances = ["instance"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]

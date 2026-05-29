@@ -1,0 +1,3 @@
+<h1 xmlns:tal="http://xml.zope.org/namespaces/tal"
+    class="documentFirstHeading block title"
+    tal:content="context/Title">Title</h1>
