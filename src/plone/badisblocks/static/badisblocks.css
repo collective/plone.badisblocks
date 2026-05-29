@@ -112,39 +112,46 @@
  * Block alignment + media sizing
  *
  * The video and maps views emit a has--align--<value> class (default "full"),
- * mirroring Volto, but ship no CSS to back it. This ports volto-light-theme's
- * model: a block is centered to one of three container widths
- * (theme/_layout.scss: center = narrow 620px, wide = 940px, full = layout
- * width), and left/right-aligned media floats to the side at half width with
- * content wrapping beside it (theme/blocks/_maps.scss). The embeds also get a
- * 16:9 box because the iframes/<video> carry no intrinsic size (a bare iframe
- * would fall back to 300x150). Scoped to the media blocks that carry an align
- * setting so text blocks keep their natural flow.
+ * mirroring Volto, but ship no CSS to back it. In volto-light-theme the three
+ * widths (narrow/default/layout) are scaled to a 1440px page, but in this
+ * Classic UI port the content column (.blocks-view) is ~966px — already about
+ * volto-light-theme's "default" width. The Classic UI also keeps a left
+ * navigation column that Volto's published pages don't, so the content section
+ * sits off-center and a true viewport full-bleed would overflow it. So there
+ * are two meaningful sizes here:
+ *   - center / wide  -> fill the content column (the normal content width)
+ *   - full           -> break out of the column's gutter to span the full
+ *                       content section (right of the nav), without overflowing
+ * Left/right-aligned media floats to the side at half width with content
+ * wrapping beside it (theme/blocks/_maps.scss). The embeds also get a 16:9 box
+ * because the iframes/<video> carry no intrinsic size (a bare iframe would fall
+ * back to 300x150). Scoped to the media blocks that carry an align setting so
+ * text blocks keep their natural flow.
  * ------------------------------------------------------------------------- */
 
 :root {
-  --bb-container-wide: 940px;
-  --bb-container-narrow: 620px;
   --bb-embed-aspect-ratio: 16 / 9;
+  /* Barceloneta's content column gutter (Bootstrap grid half-gutter). full
+   * align eats this so the embed reaches the section edges. */
+  --bb-column-gutter: 12px;
 }
 
-/* Container-width alignment: center is narrowest, then wide, full is widest. */
+/* center / wide: fill the content column (the normal content width). */
 .block.video.has--align--center,
-.block.maps.has--align--center {
-  max-width: var(--bb-container-narrow);
-  margin-inline: auto;
-}
-
+.block.maps.has--align--center,
 .block.video.has--align--wide,
 .block.maps.has--align--wide {
-  max-width: var(--bb-container-wide);
+  max-width: 100%;
   margin-inline: auto;
 }
 
+/* full: break out of the content column's gutter to span the full width of the
+ * content section (right of the left navigation column). Negative inline margins
+ * eat the column padding so the embed reaches the section edges, staying tidy
+ * beside the nav rather than overflowing toward it or the viewport. */
 .block.video.has--align--full,
 .block.maps.has--align--full {
-  max-width: 100%;
-  margin-inline: auto;
+  margin-inline: calc(-1 * var(--bb-column-gutter));
 }
 
 /* Left / right: float the embed to the side at half width; content wraps.
