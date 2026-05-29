@@ -191,6 +191,48 @@ class TestBlocksRendering:
         html = self._render(blocks, ["toc", "txt"])
         assert "No headings found on this page." in html
 
+    def test_video_block_youtube(self):
+        blocks = {
+            "v": {
+                "@type": "video",
+                "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "align": "center",
+            }
+        }
+        html = self._render(blocks, ["v"])
+        assert "block video has--align--center" in html
+        assert 'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"' in html
+        assert "<iframe" in html
+        assert 'title="youtube video player"' in html
+
+    def test_video_block_vimeo(self):
+        blocks = {"v": {"@type": "video", "url": "https://vimeo.com/123456789"}}
+        html = self._render(blocks, ["v"])
+        assert 'src="https://player.vimeo.com/video/123456789"' in html
+        assert "has--align--full" in html
+
+    def test_video_block_self_hosted(self):
+        blocks = {
+            "v": {
+                "@type": "video",
+                "url": "https://example.com/clip.mp4",
+                "preview_image": "https://example.com/poster.jpg",
+                "styles": {"align": "left"},
+            }
+        }
+        html = self._render(blocks, ["v"])
+        assert "<video" in html
+        assert 'src="https://example.com/clip.mp4"' in html
+        assert 'poster="https://example.com/poster.jpg"' in html
+        assert "has--align--left" in html
+        assert "<iframe" not in html
+
+    def test_video_block_empty_url_renders_no_media(self):
+        html = self._render({"v": {"@type": "video"}}, ["v"])
+        assert "<iframe" not in html
+        assert "<video" not in html
+        assert "block video" in html
+
     def test_unknown_block_falls_back_to_default(self):
         html = self._render({"a": {"@type": "nonexistent"}}, ["a"])
         assert 'data-block-type="nonexistent"' in html

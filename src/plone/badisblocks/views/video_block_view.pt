@@ -1,27 +1,16 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n_domain="plone.badisblocks">
-
-  <body>
-    <metal:title fill-slot="content-title">
-      <h1 class="documentFirstHeading" tal:content="structure context/@@title">
-        Title
-      </h1>
-    </metal:title>
-
-    <metal:description fill-slot="content-description">
-      <p class="documentDescription" tal:content="structure context/@@description">
-        Description
-      </p>
-    </metal:description>
-
-    <metal:content-core fill-slot="content-core">
-      <h2>VideoBlockView</h2>
-      <p>Render a video block (YouTube/Vimeo/self-hosted)</p>
-    </metal:content-core>
-  </body>
-</html>
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class">
+  <div class="video-wrapper"
+       tal:condition="view/embed_url">
+    <iframe frameborder="0"
+            allowfullscreen="allowfullscreen"
+            tal:attributes="src view/embed_url;
+                            title view/iframe_title;
+                            allow view/iframe_allow"></iframe>
+  </div>
+  <div class="video-wrapper"
+       tal:condition="view/video_src">
+    <video controls="controls"
+           tal:attributes="src view/video_src; poster view/poster"></video>
+  </div>
+</div>
