@@ -10,3 +10,5 @@
 - Wire `@@blocks-view` as the default view for Document, News Item, and Event.
 - Hide plone.volto's "voltobackendwarning" viewlet while the add-on is installed,
   since blocks are rendered in Classic UI on purpose.
+- Add upgrade step 1000 → 1001 reapplying the default profile so already-installed
+  sites pick up the `blocks-view` default view and the hidden backend warning.

@@ -119,9 +119,10 @@ gives `download`, `width`, `height`, and `scales` (each `{download, width}`). Bu
   (`purge="False"`).
 - **Filename rule:** GenericSetup maps spaces in the FTI id to underscores for the
   filename, so the News Item file must be `types/News_Item.xml` (not `News Item.xml`).
-- **No upgrade step yet:** the addon is unreleased/greenfield, so the initial profile
-  install covers the FTI change. Add a `plonecli add upgrade_step` (reimporting the
-  `typeinfo` step) only once these FTI changes must reach already-installed sites.
+- **Upgrade step 1000 → 1001** (`src/plone/badisblocks/upgrades/v1001.py`) reapplies the
+  default profile via `loadMigrationProfile` so already-installed sites pick up both the
+  FTI `default_view` change and the hidden `voltobackendwarning` viewlet. Add a new
+  `plonecli add upgrade_step` for any future profile change that must reach live sites.
 - **Caveat:** this makes *all* Documents/News Items/Events render through
   `@@blocks-view`. Content without `blocks_layout` renders an empty content-core (the
   renderer returns `""`). Fine for a blocks-first site; revisit with a fallback if the
@@ -209,5 +210,4 @@ must own:
 
 - `column`/`listing` template variations beyond the default markup.
 - Search block, accordion, and other add-on blocks not present in the svolto reference.
-- An upgrade step to push the FTI `default_view` change to already-installed sites
   (see "Entry-point wiring" above — only needed once the addon is released).
