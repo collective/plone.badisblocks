@@ -7,10 +7,9 @@
   by block `@type`, with a Python slate serializer.
 - Add block renderers: title, description, slate, image, gridBlock (nested), teaser,
   listing, introduction, html, slateTable, toc, video, maps, accordion, banner,
-  `__button` (volto-light-theme button), and slider (volto-light-theme carousel,
-  rendered as a no-JS CSS scroll-snap track).
-- Extract the teaser image resolution into a shared `views/teaser_image.py` helper,
-  reused by the teaser and slider blocks.
+  `__button` (button), and carousel (a container of teaser columns re-dispatched
+  into a no-JS CSS scroll-snap track).
+- Extract the teaser image resolution into a shared `views/teaser_image.py` helper.
 - Wire `@@blocks-view` as the default view for Document, News Item, and Event.
 - Hide plone.volto's "voltobackendwarning" viewlet while the add-on is installed,
   since blocks are rendered in Classic UI on purpose.

@@ -1,11 +1,11 @@
 """Resolve a teaser-style image (preview_image override or target scales).
 
-Shared by the teaser block and the slider block, whose slides are themselves
-teasers. An overwritten ``preview_image`` wins; otherwise the target's
+An overwritten ``preview_image`` wins; otherwise the target's
 ``image_scales[image_field]`` is used. The base path re-adds the site-id prefix
 that plone.volto's preview-image adapter strips (it stores ``base_path``
 navigation-root relative, which Volto serves but Classic UI does not), or falls
-back to the target ``@id`` path.
+back to the target ``@id`` path. Extracted from the teaser block; the carousel
+block reuses it indirectly by dispatching its columns through the teaser view.
 """
 
 from urllib.parse import urlparse

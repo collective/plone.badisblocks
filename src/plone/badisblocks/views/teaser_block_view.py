@@ -5,7 +5,7 @@ resolved target (a brain summary); with ``overwrite`` false the serializer alrea
 copies the target's title/description/head_title onto ``data`` itself, so ``data``'s
 values are authoritative either way. The image comes from an overwritten
 ``preview_image`` or the target's ``image_scales[image_field]`` (resolved by the
-shared ``teaser_image`` helper, which the slider block reuses per slide).
+shared ``teaser_image`` helper).
 """
 
 from urllib.parse import urlparse

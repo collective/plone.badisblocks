@@ -46,7 +46,7 @@ blocks (the "nested views" requirement).
  ├─ @@block-accordion         data["data"] blocks/blocks_layout -> <details> panels (nested)
  ├─ @@block-banner            image_scales/url + text/additionalText -> hero
  ├─ @@block-__button          data["title"]/href[0] -> call-to-action link
- ├─ @@block-slider            data["slides"] (teaser-per-slide) -> scroll-snap carousel
+ ├─ @@block-carousel          data["columns"] (teaser blocks) -> re-dispatch in scroll-snap track
  └─ @@block-default           fallback
 ```
 
@@ -184,20 +184,23 @@ per-block test under `tests/test_view_<name>_block_view.py`.
 | `@@block-accordion` | `data["data"]["blocks"]`, `data["data"]["blocks_layout"]`, panel `title`, `collapsed`, `non_exclusive` | native `<details>`/`<summary>` panels, nested re-dispatch |
 | `@@block-banner` | `data["image_scales"]`, `data["url"]`, `data["text"]`, `data["additionalText"]`, `data["theme"]` | volto-light-theme hero: background `<img srcset>` with title + additional text overlaid |
 | `@@block-__button` | `data["title"]`, `data["href"][0]["@id"]`, `data["openLinkInNewTab"]`, `data["styles"]["align"]`/`data["inneralign"]` | call-to-action link (`<a class="button">`); `target=_blank`+`rel=noopener` for new-tab links; `has--align--<value>` placement |
-| `@@block-slider` | `data["slides"]` — each slide a teaser: `href[0]`, `head_title`, `title`, `description`, `preview_image`, `buttonText`, `hideButton`, `flagAlign`, `openLinkInNewTab` | every slide rendered into a CSS scroll-snap track (no JS), text overlaid on the slide image like the banner; per-slide CTA span + `has--flagAlign--<value>` |
+| `@@block-carousel` | `data["headline"]`, `data["items_to_show"]`, `data["columns"]` (teaser blocks) | optional headline + each column re-dispatched through its own view (teaser) into a CSS scroll-snap track (no JS); `items_to_show` sets the visible-card count via `--bb-carousel-items` |
 | `@@block-default` | — | nothing visible (type name in dev) |
 
 `@@block-__button` is `@kitconcept/volto-button-block`'s block (`@type` `__button`,
-hence the view name `@@block-__button`). `@@block-slider` is
-`@kitconcept/volto-slider-block`'s carousel (`@type` `slider`). A slider slide is
-itself a teaser, so both blocks resolve their image through the shared
-`views/teaser_image.py:teaser_image(preview_image, target)` helper (an overwritten
-`preview_image` wins, else the target's `image_scales[image_field]`; the base path
-re-adds the site-id prefix `plone.volto` strips). The teaser block uses the same
-helper, so all three stay consistent. Slide href/preview_image enrichment is done
-upstream by the kitconcept backend's serialization transformers (when installed);
-the renderer consumes the already-serialized shape and degrades to no-image/no-link
-gracefully when a slide is unresolved.
+hence the view name `@@block-__button`); it reads `data["title"]` and the
+object-browser link `data["href"][0]["@id"]`.
+
+`@@block-carousel` (`@type` `carousel`) is a *container* like the grid block: its
+`columns` are themselves blocks (teasers), so it re-uses `BlockDispatchMixin` to
+render each column through its own per-type view. The columns' teasers are
+enriched (href resolved, `image_scales` attached) by `serialize_blocks` —
+plone.volto's `NestedBlocksVisitor` recurses into `columns`/`hrefList`/`slides`,
+so the standard teaser/image transformers run on each. Because the carousel
+dispatches to the teaser view, teaser image handling (the shared
+`views/teaser_image.py:teaser_image(preview_image, target)` helper) is reused for
+free. Volto drives the carousel with JS; this port lays the cards out in a CSS
+scroll-snap track so it works server-side without any JS.
 
 `@@block-teaser` reads the resolved target from `data["href"][0]` (or block fields
 when `overwrite` is true), renders an optional image (from `preview_image` or the

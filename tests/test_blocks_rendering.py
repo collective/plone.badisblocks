@@ -610,66 +610,66 @@ class TestBlocksRendering:
         html = self._render({"b": {"@type": "__button"}}, ["b"])
         assert "block button" not in html
 
-    def test_slider_block_renders_slides(self):
-        target = {
-            "@id": "http://localhost:8080/Plone/slide-target",
-            "title": "Slide Target",
-            "description": "Slide description",
-            "image_field": "image",
-            "image_scales": {
-                "image": [
+    def test_carousel_block_renders_teaser_columns(self):
+        def teaser(uid, path, title):
+            return {
+                "@id": uid,
+                "@type": "teaser",
+                "title": title,
+                "overwrite": True,
+                "href": [
                     {
-                        "download": "@@images/slide.png",
-                        "width": 1600,
-                        "height": 900,
-                        "scales": {
-                            "large": {
-                                "download": "@@images/slide-800.png",
-                                "width": 800,
-                            }
+                        "@id": f"http://localhost:8080/Plone/{path}",
+                        "title": title,
+                        "image_field": "image",
+                        "image_scales": {
+                            "image": [
+                                {
+                                    "download": "@@images/img.png",
+                                    "width": 1200,
+                                    "height": 800,
+                                    "scales": {
+                                        "teaser": {
+                                            "download": "@@images/img-600.png",
+                                            "width": 600,
+                                        }
+                                    },
+                                }
+                            ]
                         },
                     }
-                ]
-            },
-        }
+                ],
+            }
+
         blocks = {
-            "s": {
-                "@type": "slider",
-                "slides": [
-                    {
-                        "href": [target],
-                        "head_title": "Featured",
-                        "buttonText": "Discover",
-                    },
-                    {
-                        "href": [{"@id": "http://localhost:8080/Plone/other", "title": "Other"}],
-                        "hideButton": True,
-                        "flagAlign": "right",
-                    },
+            "c": {
+                "@type": "carousel",
+                "headline": "My Carousel",
+                "items_to_show": 4,
+                "columns": [
+                    teaser("u1", "first", "First Card"),
+                    teaser("u2", "second", "Second Card"),
                 ],
             }
         }
-        html = self._render(blocks, ["s"])
-        assert "block slider" in html
-        assert html.count("slider-slide has--flagAlign") == 2
-        # first slide: target fields, image with srcset, kicker, CTA button
-        assert "Slide Target" in html
-        assert "Slide description" in html
-        assert "Featured" in html
-        assert 'href="/Plone/slide-target"' in html
-        assert "/Plone/slide-target/@@images/slide.png" in html
-        assert "/Plone/slide-target/@@images/slide-800.png 800w" in html
-        assert ">Discover<" in html
-        # second slide: button hidden, right flag alignment
-        assert "Other" in html
-        assert "has--flagAlign--right" in html
-        # slides render in order
-        assert html.index("Slide Target") < html.index("Other")
+        html = self._render(blocks, ["c"])
+        assert "block carousel" in html
+        assert "My Carousel" in html
+        assert "--bb-carousel-items: 4" in html
+        assert html.count("carousel-slide") == 2
+        # each column rendered through the teaser view, in order
+        assert "First Card" in html
+        assert "Second Card" in html
+        assert html.index("First Card") < html.index("Second Card")
+        assert 'href="/Plone/first"' in html
+        # teaser columns are linked cards with resolved images
+        assert "/Plone/first/@@images/img.png" in html
+        assert "/Plone/second/@@images/img-600.png 600w" in html
 
-    def test_slider_block_empty_renders_no_slides(self):
-        html = self._render({"s": {"@type": "slider", "slides": []}}, ["s"])
-        assert "block slider" in html
-        assert "slider-slide" not in html
+    def test_carousel_block_empty_renders_no_track(self):
+        html = self._render({"c": {"@type": "carousel", "columns": []}}, ["c"])
+        assert "block carousel" in html
+        assert "carousel-track" not in html
 
     def test_blocks_render_in_layout_order(self):
         blocks = {

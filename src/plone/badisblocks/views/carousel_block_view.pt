@@ -1,0 +1,13 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class">
+  <h2 class="headline"
+      tal:condition="view/headline"
+      tal:content="view/headline">Carousel</h2>
+  <div class="carousel-track"
+       tal:condition="view/columns"
+       tal:attributes="style view/track_style">
+    <div class="carousel-slide"
+         tal:repeat="column view/columns"
+         tal:content="structure column">column</div>
+  </div>
+</div>
