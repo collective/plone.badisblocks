@@ -1,27 +1,30 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n_domain="plone.badisblocks">
+<nav xmlns:tal="http://xml.zope.org/namespaces/tal"
+     class="block toc"
+     tal:attributes="aria-label view/aria_label">
+  <h2 class="toc-title"
+      tal:condition="view/show_title"
+      tal:content="view/title">title</h2>
 
-  <body>
-    <metal:title fill-slot="content-title">
-      <h1 class="documentFirstHeading" tal:content="structure context/@@title">
-        Title
-      </h1>
-    </metal:title>
+  <p class="toc-empty"
+     tal:condition="not:view/entries">No headings found on this page.</p>
 
-    <metal:description fill-slot="content-description">
-      <p class="documentDescription" tal:content="structure context/@@description">
-        Description
-      </p>
-    </metal:description>
-
-    <metal:content-core fill-slot="content-core">
-      <h2>TocBlockView</h2>
-      <p>Render a table of contents block</p>
-    </metal:content-core>
-  </body>
-</html>
+  <tal:list tal:condition="view/entries"
+            tal:define="ordered view/ordered">
+    <ol class="toc-list" tal:condition="ordered">
+      <li tal:repeat="entry view/entries"
+          tal:attributes="class string:toc-item toc-level-${entry/level}">
+        <a class="toc-link"
+           tal:attributes="href string:#${entry/id}"
+           tal:content="entry/title">heading</a>
+      </li>
+    </ol>
+    <ul class="toc-list" tal:condition="not:ordered">
+      <li tal:repeat="entry view/entries"
+          tal:attributes="class string:toc-item toc-level-${entry/level}">
+        <a class="toc-link"
+           tal:attributes="href string:#${entry/id}"
+           tal:content="entry/title">heading</a>
+      </li>
+    </ul>
+  </tal:list>
+</nav>

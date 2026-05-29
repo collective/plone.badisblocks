@@ -141,6 +141,56 @@ class TestBlocksRendering:
         assert "<thead" not in html
         assert "R1" in html
 
+    def test_slate_heading_gets_anchor_id(self):
+        blocks = {
+            "h": {
+                "@type": "slate",
+                "value": [{"type": "h2", "children": [{"text": "My Section"}]}],
+            }
+        }
+        html = self._render(blocks, ["h"])
+        assert '<h2 id="h-my-section">My Section</h2>' in html
+
+    def test_toc_block_links_to_slate_headings(self):
+        blocks = {
+            "h1b": {
+                "@type": "slate",
+                "value": [{"type": "h2", "children": [{"text": "First Section"}]}],
+            },
+            "txt": {
+                "@type": "slate",
+                "value": [{"type": "p", "children": [{"text": "body"}]}],
+            },
+            "h2b": {
+                "@type": "slate",
+                "value": [{"type": "h3", "children": [{"text": "Sub Section"}]}],
+            },
+            "toc": {"@type": "toc", "title": "Contents"},
+        }
+        html = self._render(blocks, ["toc", "h1b", "txt", "h2b"])
+        # Title shown, links target the anchors the slate renderer emits.
+        assert "Contents" in html
+        assert 'href="#h1b-first-section"' in html
+        assert 'href="#h2b-sub-section"' in html
+        assert "toc-level-2" in html
+        assert "toc-level-3" in html
+        # Anchor targets actually exist in the rendered page.
+        assert 'id="h1b-first-section"' in html
+        assert 'id="h2b-sub-section"' in html
+        # The paragraph is not a heading and is excluded.
+        assert "toc-level-1" not in html
+
+    def test_toc_block_empty_when_no_headings(self):
+        blocks = {
+            "txt": {
+                "@type": "slate",
+                "value": [{"type": "p", "children": [{"text": "no headings"}]}],
+            },
+            "toc": {"@type": "toc"},
+        }
+        html = self._render(blocks, ["toc", "txt"])
+        assert "No headings found on this page." in html
+
     def test_unknown_block_falls_back_to_default(self):
         html = self._render({"a": {"@type": "nonexistent"}}, ["a"])
         assert 'data-block-type="nonexistent"' in html

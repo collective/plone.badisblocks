@@ -1,6 +1,8 @@
 """Unit tests for the slate -> HTML serializer (no Plone layer needed)."""
 
+from plone.badisblocks.views.slate import heading_anchor_id
 from plone.badisblocks.views.slate import render_nodes
+from plone.badisblocks.views.slate import slugify
 
 
 class TestSlateSerializer:
@@ -102,3 +104,15 @@ class TestSlateSerializer:
     def test_headings(self):
         nodes = [{"type": "h2", "children": [{"text": "Title"}]}]
         assert render_nodes(nodes) == "<h2>Title</h2>"
+
+    def test_heading_gets_anchor_id_with_block_id(self):
+        nodes = [{"type": "h2", "children": [{"text": "Some Title!"}]}]
+        assert render_nodes(nodes, "block1") == '<h2 id="block1-some-title">Some Title!</h2>'
+
+    def test_slugify_strips_accents_and_symbols(self):
+        assert slugify("Über Café & Co.") == "uber-cafe-co"
+        assert slugify("  multiple   spaces  ") == "multiple-spaces"
+
+    def test_heading_anchor_id_falls_back_to_block_id(self):
+        # Symbol-only heading has an empty slug.
+        assert heading_anchor_id("b1", "!!!") == "b1"
