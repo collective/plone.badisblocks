@@ -115,4 +115,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-maps"
+      for="*"
+      class=".maps_block_view.MapsBlockView"
+      template="maps_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>
