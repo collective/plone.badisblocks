@@ -233,6 +233,30 @@ class TestBlocksRendering:
         assert "<video" not in html
         assert "block video" in html
 
+    def test_maps_block(self):
+        blocks = {
+            "m": {
+                "@type": "maps",
+                "url": "https://www.google.com/maps/embed?pb=!1m18",
+                "title": "Office Location",
+                "align": "center",
+            }
+        }
+        html = self._render(blocks, ["m"])
+        assert "block maps has--align--center" in html
+        assert 'src="https://www.google.com/maps/embed?pb=!1m18"' in html
+        assert 'title="Office Location"' in html
+        assert 'loading="lazy"' in html
+        assert 'href="#after-map-m"' in html
+        assert 'id="after-map-m"' in html
+
+    def test_maps_block_rejects_unsafe_url(self):
+        blocks = {"m": {"@type": "maps", "url": "javascript:alert(1)"}}
+        html = self._render(blocks, ["m"])
+        assert "<iframe" not in html
+        assert "javascript" not in html
+        assert "block maps" in html
+
     def test_unknown_block_falls_back_to_default(self):
         html = self._render({"a": {"@type": "nonexistent"}}, ["a"])
         assert 'data-block-type="nonexistent"' in html

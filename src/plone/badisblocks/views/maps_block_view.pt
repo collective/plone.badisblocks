@@ -1,27 +1,23 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n_domain="plone.badisblocks">
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class">
+  <a class="skip-map-link"
+     tal:attributes="href string:#${view/anchor_id}">Skip map</a>
 
-  <body>
-    <metal:title fill-slot="content-title">
-      <h1 class="documentFirstHeading" tal:content="structure context/@@title">
-        Title
-      </h1>
-    </metal:title>
+  <div class="maps-wrapper"
+       role="region"
+       tal:attributes="aria-label view/aria_label">
+    <iframe loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen="allowfullscreen"
+            frameborder="0"
+            tal:condition="view/url"
+            tal:attributes="src view/url; title view/title"></iframe>
+  </div>
 
-    <metal:description fill-slot="content-description">
-      <p class="documentDescription" tal:content="structure context/@@description">
-        Description
-      </p>
-    </metal:description>
+  <noscript tal:condition="view/url">
+    <p>View <a tal:attributes="href view/url"
+               tal:content="view/aria_label">this location</a> on Google Maps</p>
+  </noscript>
 
-    <metal:content-core fill-slot="content-core">
-      <h2>MapsBlockView</h2>
-      <p>Render a maps (embed) block</p>
-    </metal:content-core>
-  </body>
-</html>
+  <span tal:attributes="id view/anchor_id"></span>
+</div>
