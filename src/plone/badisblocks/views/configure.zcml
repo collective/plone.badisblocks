@@ -107,4 +107,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-video"
+      for="*"
+      class=".video_block_view.VideoBlockView"
+      template="video_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>
