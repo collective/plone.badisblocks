@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<object>
+  <!-- Restore plone.volto's backend warning viewlet on uninstall. -->
+  <hidden manager="plone.globalstatusmessage" skinname="*">
+    <viewlet name="voltobackendwarning" remove="True" />
+  </hidden>
+</object>

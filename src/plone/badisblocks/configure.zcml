@@ -49,4 +49,7 @@
 
   <include package=".views" />
 
+
+  <include package=".upgrades" />
+
 </configure>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<object>
+  <!-- Hide plone.volto's "you accessed the backend through Classic UI"
+       warning, since plone.badisblocks renders the Volto blocks in
+       Classic UI on purpose. -->
+  <hidden manager="plone.globalstatusmessage" skinname="*">
+    <viewlet name="voltobackendwarning" />
+  </hidden>
+</object>

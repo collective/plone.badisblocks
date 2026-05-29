@@ -5,6 +5,19 @@ import pytest
 from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
+from plone.app.viewletmanager.interfaces import IViewletSettingsStorage
+from zope.component import getUtility
+
+
+VIEWLET_MANAGER = "plone.globalstatusmessage"
+VIEWLET_NAME = "voltobackendwarning"
+
+
+def _is_viewlet_hidden(portal):
+    """Return True if the volto backend warning viewlet is hidden."""
+    storage = getUtility(IViewletSettingsStorage)
+    skinname = portal.portal_skins.getDefaultSkin()
+    return VIEWLET_NAME in storage.getHidden(VIEWLET_MANAGER, skinname)
 
 
 class TestSetup:
@@ -27,6 +40,10 @@ class TestSetup:
         # assert IPloneBadisblocksLayer in utils.registered_layers()
         assert True
 
+    def test_voltobackendwarning_hidden(self):
+        """The volto backend warning viewlet is hidden when installed."""
+        assert _is_viewlet_hidden(self.portal)
+
 
 class TestUninstall:
     """Test uninstallation."""
@@ -41,3 +58,7 @@ class TestUninstall:
     def test_addon_uninstalled(self):
         """Test addon is uninstalled."""
         assert not self.installer.is_product_installed("plone.badisblocks")
+
+    def test_voltobackendwarning_restored(self):
+        """The volto backend warning viewlet is shown again after uninstall."""
+        assert not _is_viewlet_hidden(self.portal)

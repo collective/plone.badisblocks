@@ -1,0 +1,31 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="plone.badisblocks">
+
+  <genericsetup:registerProfile
+      name="1001"
+      title="plone.badisblocks: upgrade to 1001"
+      directory="1001"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:upgradeSteps
+      source="1000"
+      destination="1001"
+      profile="plone.badisblocks:default">
+
+    <genericsetup:upgradeStep
+        title="Reimport typeinfo and viewlets"
+        description="Apply blocks-view default_view and hide voltobackendwarning on installed sites"
+        handler=".v1001.upgrade"
+        />
+
+    <genericsetup:upgradeDepends
+        title="Apply profile version 1001"
+        import_profile="plone.badisblocks.upgrades:1001"
+        />
+
+  </genericsetup:upgradeSteps>
+
+</configure>

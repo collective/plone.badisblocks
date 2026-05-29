@@ -126,6 +126,13 @@ gives `download`, `width`, `height`, and `scales` (each `{download, width}`). Bu
   `@@blocks-view`. Content without `blocks_layout` renders an empty content-core (the
   renderer returns `""`). Fine for a blocks-first site; revisit with a fallback if the
   site mixes classic richtext content.
+- **Hide the Volto backend warning:** `profiles/default/viewlets.xml` hides
+  `plone.volto`'s `voltobackendwarning` viewlet (manager `plone.globalstatusmessage`,
+  `skinname="*"`) since blocks are rendered in Classic UI on purpose; the uninstall
+  profile restores it with `remove="True"`. Done via the `plone.app.viewletmanager`
+  hidden-viewlet registry rather than a layer override, because `IPloneBadisblocksLayer`
+  and `IPloneVoltoCoreLayer` are sibling layers (both extend `IDefaultBrowserLayer`),
+  so adapter specificity between them is ambiguous.
 
 ## Testing (pytest-plone, already configured)
 
