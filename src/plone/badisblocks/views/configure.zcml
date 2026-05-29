@@ -99,4 +99,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-toc"
+      for="*"
+      class=".toc_block_view.TocBlockView"
+      template="toc_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>

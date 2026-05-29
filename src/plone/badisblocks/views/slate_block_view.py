@@ -11,4 +11,4 @@ class SlateBlockView(BaseBlockView):
     """Render a slate block's node tree as safe HTML."""
 
     def render(self):
-        return render_nodes((self.data or {}).get("value"))
+        return render_nodes((self.data or {}).get("value"), self.block_id)
