@@ -1,27 +1,21 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n_domain="plone.badisblocks">
-
-  <body>
-    <metal:title fill-slot="content-title">
-      <h1 class="documentFirstHeading" tal:content="structure context/@@title">
-        Title
-      </h1>
-    </metal:title>
-
-    <metal:description fill-slot="content-description">
-      <p class="documentDescription" tal:content="structure context/@@description">
-        Description
-      </p>
-    </metal:description>
-
-    <metal:content-core fill-slot="content-core">
-      <h2>SlateTableBlockView</h2>
-      <p>Render a slate table block</p>
-    </metal:content-core>
-  </body>
-</html>
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     class="block slateTable"
+     tal:condition="view/has_rows">
+  <div class="table-scroll-container">
+    <table tal:attributes="class string:table ${view/table_classes}">
+      <thead tal:condition="not:view/hide_headers">
+        <tr>
+          <th scope="col"
+              tal:repeat="cell view/header_cells"
+              tal:content="structure python:view.cell_html(cell)">cell</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="row view/data_rows">
+          <td tal:repeat="cell row/cells"
+              tal:content="structure python:view.cell_html(cell)">cell</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

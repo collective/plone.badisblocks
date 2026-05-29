@@ -95,6 +95,52 @@ class TestBlocksRendering:
         html = self._render({"a": {"@type": "html", "html": "   "}}, ["a"])
         assert "<div" not in html
 
+    def test_slate_table_block(self):
+        def cell(text):
+            return {"value": [{"type": "p", "children": [{"text": text}]}]}
+
+        blocks = {
+            "a": {
+                "@type": "slateTable",
+                "table": {
+                    "striped": True,
+                    "rows": [
+                        {"cells": [cell("Name"), cell("Role")]},
+                        {"cells": [cell("Ada"), cell("Engineer")]},
+                        {"cells": [cell("Bob"), cell("Designer")]},
+                    ],
+                },
+            }
+        }
+        html = self._render(blocks, ["a"])
+        assert "block slateTable" in html
+        assert "slateTable--striped" in html
+        assert "<th scope=\"col\"><p>Name</p></th>" in html
+        assert "<td><p>Ada</p></td>" in html
+        assert "<td><p>Designer</p></td>" in html
+        # First row is the header, not a body row.
+        assert html.index("<thead") < html.index("<tbody")
+
+    def test_slate_table_block_hide_headers(self):
+        def cell(text):
+            return {"value": [{"type": "p", "children": [{"text": text}]}]}
+
+        blocks = {
+            "a": {
+                "@type": "slateTable",
+                "table": {
+                    "hideHeaders": True,
+                    "rows": [
+                        {"cells": [cell("H1")]},
+                        {"cells": [cell("R1")]},
+                    ],
+                },
+            }
+        }
+        html = self._render(blocks, ["a"])
+        assert "<thead" not in html
+        assert "R1" in html
+
     def test_unknown_block_falls_back_to_default(self):
         html = self._render({"a": {"@type": "nonexistent"}}, ["a"])
         assert 'data-block-type="nonexistent"' in html
