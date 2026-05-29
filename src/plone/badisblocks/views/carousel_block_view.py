@@ -38,10 +38,18 @@ class CarouselBlockView(BaseBlockView, BlockDispatchMixin):
         return f"--bb-carousel-items: {self.items_to_show}"
 
     @property
+    def _column_ids(self):
+        return [col["@id"] for col in (self.data or {}).get("columns") or [] if col.get("@id")]
+
+    @property
+    def column_count(self):
+        return len(self._column_ids)
+
+    @property
     def columns(self):
         cols = (self.data or {}).get("columns") or []
         blocks = {col["@id"]: col for col in cols if col.get("@id")}
-        return [self.render_block(col["@id"], blocks) for col in cols if col.get("@id")]
+        return [self.render_block(cid, blocks) for cid in self._column_ids]
 
     @property
     def css_class(self):

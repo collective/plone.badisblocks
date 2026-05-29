@@ -62,3 +62,17 @@ class TestViewCarouselBlockView:
     def test_columns_without_ids_are_skipped(self):
         view = self._view({"@type": "carousel", "columns": [{"@type": "teaser"}]})
         assert view.columns == []
+        assert view.column_count == 0
+
+    def test_column_count_counts_only_columns_with_ids(self):
+        view = self._view(
+            {
+                "@type": "carousel",
+                "columns": [
+                    {"@id": "u1", "@type": "teaser"},
+                    {"@type": "teaser"},
+                    {"@id": "u2", "@type": "teaser"},
+                ],
+            }
+        )
+        assert view.column_count == 2

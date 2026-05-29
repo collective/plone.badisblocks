@@ -378,10 +378,12 @@ a.button:focus-visible {
  * Carousel block (@type carousel)
  *
  * A container whose ``columns`` are teaser blocks, dispatched through the teaser
- * view. Volto drives it with JavaScript; this Classic UI port lays the cards out
- * in a horizontal CSS scroll-snap track so the block works with no JS — the
- * cards are reachable by swipe/scroll. ``items_to_show`` (via the
- * --bb-carousel-items custom property) sets how many cards are visible at once.
+ * view. The cards lay out in a horizontal scroll-snap viewport. Volto drives the
+ * carousel with JavaScript (Embla); badisblocks.js does the same here — it wires
+ * the prev/next arrows and the dot navigation and adds `is-enhanced` to the
+ * wrapper. Without JS the viewport stays scrollable/swipeable with a visible
+ * scrollbar and the (non-functional) controls are hidden. ``items_to_show`` (via
+ * the --bb-carousel-items custom property) sets how many cards show at once.
  * ------------------------------------------------------------------------- */
 
 .block.carousel {
@@ -392,16 +394,32 @@ a.button:focus-visible {
   margin-block: 0 1rem;
 }
 
-.block.carousel .carousel-track {
-  display: flex;
-  gap: 1rem;
+.block.carousel .carousel-wrapper {
+  position: relative;
+}
+
+.block.carousel .carousel-viewport {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding-block-end: 0.5rem;
+  /* Before enhancement the scrollbar is the only affordance, so keep it. */
   scrollbar-width: thin;
 }
 
-/* Each card takes an equal share of the track so that exactly
+.block.carousel .carousel-wrapper.is-enhanced .carousel-viewport {
+  scrollbar-width: none;
+}
+
+.block.carousel .carousel-wrapper.is-enhanced .carousel-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.block.carousel .carousel-container {
+  display: flex;
+  gap: 1rem;
+  padding-block-end: 0.5rem;
+}
+
+/* Each card takes an equal share of the row so that exactly
  * --bb-carousel-items cards fit across, accounting for the inter-card gaps. */
 .block.carousel .carousel-slide {
   flex: 0 0
@@ -411,6 +429,76 @@ a.button:focus-visible {
     );
   min-width: 0;
   scroll-snap-align: start;
+}
+
+/* Arrows and dots are only meaningful once JS drives the scroll; hide them
+ * until the wrapper is enhanced. */
+.block.carousel .carousel-button,
+.block.carousel .carousel-dots {
+  display: none;
+}
+
+.block.carousel .carousel-wrapper.is-enhanced .carousel-button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1a1a1a;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.block.carousel .carousel-button:hover {
+  background: #fff;
+}
+
+.block.carousel .carousel-button[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.block.carousel .carousel-button-prev {
+  left: 8px;
+}
+
+.block.carousel .carousel-button-next {
+  right: 8px;
+}
+
+.block.carousel .carousel-button .icon {
+  width: auto;
+  height: 36px;
+  fill: currentColor;
+}
+
+.block.carousel .carousel-wrapper.is-enhanced .carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-block-start: 1rem;
+}
+
+.block.carousel .carousel-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.block.carousel .carousel-dot.is-active {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* The dispatched teaser ships its own block margins; neutralise them inside a

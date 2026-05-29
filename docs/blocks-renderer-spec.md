@@ -184,7 +184,7 @@ per-block test under `tests/test_view_<name>_block_view.py`.
 | `@@block-accordion` | `data["data"]["blocks"]`, `data["data"]["blocks_layout"]`, panel `title`, `collapsed`, `non_exclusive` | native `<details>`/`<summary>` panels, nested re-dispatch |
 | `@@block-banner` | `data["image_scales"]`, `data["url"]`, `data["text"]`, `data["additionalText"]`, `data["theme"]` | volto-light-theme hero: background `<img srcset>` with title + additional text overlaid |
 | `@@block-__button` | `data["title"]`, `data["href"][0]["@id"]`, `data["openLinkInNewTab"]`, `data["styles"]["align"]`/`data["inneralign"]` | call-to-action link (`<a class="button">`); `target=_blank`+`rel=noopener` for new-tab links; `has--align--<value>` placement |
-| `@@block-carousel` | `data["headline"]`, `data["items_to_show"]`, `data["columns"]` (teaser blocks) | optional headline + each column re-dispatched through its own view (teaser) into a CSS scroll-snap track (no JS); `items_to_show` sets the visible-card count via `--bb-carousel-items` |
+| `@@block-carousel` | `data["headline"]`, `data["items_to_show"]`, `data["columns"]` (teaser blocks) | optional headline + each column re-dispatched through its own view (teaser) into a scroll-snap viewport, matching Volto's markup (`carousel-wrapper`/`-viewport`/`-container`) with prev/next arrows and one dot per card; `items_to_show` sets the visible-card count via `--bb-carousel-items` |
 | `@@block-default` | — | nothing visible (type name in dev) |
 
 `@@block-__button` is `@kitconcept/volto-button-block`'s block (`@type` `__button`,
@@ -200,7 +200,13 @@ so the standard teaser/image transformers run on each. Because the carousel
 dispatches to the teaser view, teaser image handling (the shared
 `views/teaser_image.py:teaser_image(preview_image, target)` helper) is reused for
 free. Volto drives the carousel with JS; this port lays the cards out in a CSS
-scroll-snap track so it works server-side without any JS.
+scroll-snap track. To match Volto's controls (prev/next arrows and the dot row),
+the block also ships a small vanilla-JS progressive enhancement,
+`static/badisblocks.js`, linked by a second viewlet (`plone.badisblocks.js`, in
+the `IScripts` manager). It wires the arrows and dots to the scroll viewport,
+tracks the active dot, disables the arrows at the ends, and adds `is-enhanced`
+to the wrapper — the controls are hidden until then, so without JS the viewport
+degrades to a plain scrollable/swipeable track with a visible scrollbar.
 
 `@@block-teaser` reads the resolved target from `data["href"][0]` (or block fields
 when `overwrite` is true), renders an optional image (from `preview_image` or the

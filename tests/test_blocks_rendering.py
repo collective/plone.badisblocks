@@ -656,7 +656,15 @@ class TestBlocksRendering:
         assert "block carousel" in html
         assert "My Carousel" in html
         assert "--bb-carousel-items: 4" in html
+        # scroll-snap viewport with the teaser cards
+        assert "carousel-viewport" in html
+        assert "carousel-container" in html
         assert html.count("carousel-slide") == 2
+        # prev/next arrows and one dot per column (driven by badisblocks.js)
+        assert "carousel-button-prev" in html
+        assert "carousel-button-next" in html
+        assert "carousel-dots" in html
+        assert html.count('class="carousel-dot"') == 2
         # each column rendered through the teaser view, in order
         assert "First Card" in html
         assert "Second Card" in html
@@ -666,10 +674,11 @@ class TestBlocksRendering:
         assert "/Plone/first/@@images/img.png" in html
         assert "/Plone/second/@@images/img-600.png 600w" in html
 
-    def test_carousel_block_empty_renders_no_track(self):
+    def test_carousel_block_empty_renders_no_controls(self):
         html = self._render({"c": {"@type": "carousel", "columns": []}}, ["c"])
         assert "block carousel" in html
-        assert "carousel-track" not in html
+        assert "carousel-wrapper" not in html
+        assert "carousel-button" not in html
 
     def test_blocks_render_in_layout_order(self):
         blocks = {

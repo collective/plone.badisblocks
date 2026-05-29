@@ -8,7 +8,8 @@
 - Add block renderers: title, description, slate, image, gridBlock (nested), teaser,
   listing, introduction, html, slateTable, toc, video, maps, accordion, banner,
   `__button` (button), and carousel (a container of teaser columns re-dispatched
-  into a no-JS CSS scroll-snap track).
+  into a scroll-snap viewport with Volto-style prev/next arrows and dot navigation,
+  driven by a small progressive-enhancement script `static/badisblocks.js`).
 - Extract the teaser image resolution into a shared `views/teaser_image.py` helper.
 - Wire `@@blocks-view` as the default view for Document, News Item, and Event.
 - Hide plone.volto's "voltobackendwarning" viewlet while the add-on is installed,

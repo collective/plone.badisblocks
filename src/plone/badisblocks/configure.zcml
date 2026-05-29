@@ -23,6 +23,14 @@
       permission="zope2.View"
       />
 
+  <browser:viewlet
+      name="plone.badisblocks.js"
+      manager="plone.app.layout.viewlets.interfaces.IScripts"
+      layer=".interfaces.IPloneBadisblocksLayer"
+      template="views/badisblocks_js.pt"
+      permission="zope2.View"
+      />
+
   <genericsetup:registerProfile
       name="default"
       title="Plone Badisblocks"
