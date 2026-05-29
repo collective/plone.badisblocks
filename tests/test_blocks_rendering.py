@@ -472,7 +472,12 @@ class TestBlocksRendering:
         }
         html = self._render(blocks, ["l"])
         assert "My Listing" in html
-        assert "listing-items" in html
+        # volto-light-theme markup: ul.items > li.listing-item, title is a
+        # div.title with a card-primary-link (not a heading).
+        assert 'class="items"' in html
+        assert "listing-item document-listing" in html
+        assert '<div class="title">' in html
+        assert "card-primary-link" in html
         assert "Listing Item 1" in html
         assert "Listing Item 3" in html
         assert "Description 2" in html
@@ -489,8 +494,11 @@ class TestBlocksRendering:
         }
         html = self._render(blocks, ["l"])
         assert "variation-summary" in html
-        assert "listing-summary" in html
-        assert "listing-card" in html
+        # Summary items carry has--align--left and the shared card markup.
+        assert "listing-item has--align--left" in html
+        assert 'class="card"' in html
+        assert 'class="card-summary"' in html
+        assert "card-primary-link" in html
         assert "Listing Item 1" in html
 
     def test_listing_block_no_results(self):

@@ -13,9 +13,11 @@ When the block has no querystring configured, Volto falls back to showing the
 current context's contained items (folder contents, in folder order); this view
 mirrors that with a path/depth-1 catalog query.
 
-Two variations are supported (matching Volto's built-ins): ``default`` (a simple
-list of links) and ``summary`` (a card grid with preview images). Unknown
-variations fall back to ``default``.
+Two variations are supported (matching Volto's built-ins): ``default`` and
+``summary`` (adds a preview image). Unknown variations fall back to ``default``.
+The markup mirrors @kitconcept/volto-light-theme: a ``ul.items`` list of
+``li.listing-item`` cards whose title is a ``div.title`` (not a heading), so the
+listing renders as a list and item content carries no headings.
 """
 
 from urllib.parse import urlparse
@@ -155,6 +157,24 @@ class ListingBlockView(BaseBlockView):
     def show_link_more(self):
         return bool(self.link_more_title and self.link_more_href)
 
+    @staticmethod
+    def _type_class(portal_type):
+        return f"{portal_type.lower()}-listing" if portal_type else ""
+
+    def item_class(self, item):
+        """CSS classes for a listing item ``<li>``, matching volto-light-theme."""
+        classes = ["listing-item"]
+        if self.variation == "summary":
+            classes.append("has--align--left")
+        if item.get("type_class"):
+            classes.append(item["type_class"])
+        return " ".join(classes)
+
+    @property
+    def show_image(self):
+        """Preview images are only shown in the summary variation."""
+        return self.variation == "summary"
+
     def _resolve_items(self):
         querystring = (self.data or {}).get("querystring") or {}
         query = querystring.get("query")
@@ -221,6 +241,8 @@ class ListingBlockView(BaseBlockView):
         for item in self._resolve_items():
             models.append({
                 "url": _path(item.get("@id")),
+                "type_class": self._type_class(item.get("@type")),
+                "head_title": item.get("head_title") or "",
                 "title": item.get("title") or "",
                 "description": item.get("description") or "",
                 "image": _image_view_model(item),

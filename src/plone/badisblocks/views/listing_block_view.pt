@@ -13,53 +13,44 @@
   <p class="listing-empty"
      tal:condition="not:view/items">No results found.</p>
 
-  <div class="listing-summary"
-       tal:condition="python:bool(view.items) and view.variation == 'summary'">
-    <article class="listing-card"
-             tal:repeat="item view/items">
-      <a class="card-image-link"
-         tal:condition="item/image"
-         tal:attributes="href item/url">
-        <img class="card-image"
-             loading="lazy"
-             tal:attributes="src item/image/src;
-                            srcset item/image/srcset;
-                            sizes item/image/sizes;
-                            width item/image/width;
-                            height item/image/height;
-                            alt item/image/alt" />
-      </a>
-      <div class="card-content">
-        <h3 class="card-title">
-          <a tal:attributes="href item/url"
-             tal:content="item/title">title</a>
-        </h3>
-        <p class="card-description"
-           tal:condition="item/description"
-           tal:content="item/description">description</p>
+  <ul class="items"
+      tal:condition="view/items">
+    <li tal:repeat="item view/items"
+        tal:attributes="class python:view.item_class(item)">
+      <div class="card">
+        <div class="card-inner">
+          <div class="image-wrapper"
+               tal:condition="python:view.show_image and item['image']">
+            <img class="responsive"
+                 loading="lazy"
+                 tal:attributes="src item/image/src;
+                                srcset item/image/srcset;
+                                sizes item/image/sizes;
+                                width item/image/width;
+                                height item/image/height;
+                                alt item/image/alt" />
+          </div>
+          <div class="card-summary">
+            <div class="headline"
+                 tal:condition="item/head_title"
+                 tal:content="item/head_title">head title</div>
+            <div class="title">
+              <a class="card-primary-link"
+                 tal:attributes="href item/url"
+                 tal:content="item/title">title</a>
+            </div>
+            <p class="description"
+               tal:condition="item/description"
+               tal:content="item/description">description</p>
+          </div>
+        </div>
       </div>
-    </article>
-  </div>
-
-  <ul class="listing-items"
-      tal:condition="python:bool(view.items) and view.variation != 'summary'">
-    <li class="listing-item"
-        tal:repeat="item view/items">
-      <a class="listing-item-link"
-         tal:attributes="href item/url">
-        <span class="listing-item-title"
-              tal:content="item/title">title</span>
-      </a>
-      <p class="listing-item-description"
-         tal:condition="item/description"
-         tal:content="item/description">description</p>
     </li>
   </ul>
 
-  <div class="listing-footer"
+  <div class="footer"
        tal:condition="view/show_link_more">
-    <a class="link-more"
-       tal:attributes="href view/link_more_href"
+    <a tal:attributes="href view/link_more_href"
        tal:content="view/link_more_title">more</a>
   </div>
 </div>
