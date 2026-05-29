@@ -1,10 +1,20 @@
 # Plone Badisblocks
 
-Rendering blocks in Badis UI with Chameleon
+Server-side rendering of Volto/Seven blocks in Plone Classic UI ("Badis UI") with
+Chameleon page templates — no frontend build step. Block-enabled content is rendered
+through BrowserViews that dispatch by block `@type` to per-type `@@block-<type>` views.
+
+See `docs/blocks-renderer-spec.md` for the architecture.
 
 ## Features
 
 - Compatible with Plone 6.2+
+- Renders block content (`volto.blocks` behavior) without a REST round-trip
+- Block renderers: title, description, slate (rich text), image, gridBlock (nested),
+  teaser, listing, introduction, html, slateTable, toc, video, maps, plus a default
+  fallback
+- Slate rich-text serializer with tag whitelisting (no unsanitized editor HTML reaches
+  the page)
 
 ## Installation
 
@@ -29,24 +39,20 @@ Then activate the addon in your Plone site's control panel or via GenericSetup.
 git clone https://github.com/collective/plone.badisblocks.git
 cd plone.badisblocks
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate
-
-# Install in development mode
-pip install -e ".[test]"
+# Install in development mode (creates .venv, resolves the test extra)
+uv sync --extra test
 ```
 
 ### Running Tests
 
 ```bash
-pytest
+uv run --extra test pytest
 ```
 
 ### Running Tests with Coverage
 
 ```bash
-pytest --cov=plone.badisblocks --cov-report=html
+uv run --extra test pytest --cov=plone.badisblocks --cov-report=html
 ```
 
 ## License

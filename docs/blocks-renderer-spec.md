@@ -34,7 +34,15 @@ blocks (the "nested views" requirement).
  ├─ @@block-description       context.description -> <p class="documentDescription">
  ├─ @@block-slate             data["value"]       -> Python serializer -> structure
  ├─ @@block-image             data image_scales/url/alt -> <img srcset>
- ├─ @@block-grid              data blocks/blocks_layout -> re-dispatch (nested)
+ ├─ @@block-gridBlock         data blocks/blocks_layout -> re-dispatch (nested)
+ ├─ @@block-teaser            data["href"][0] target -> linked card
+ ├─ @@block-listing          catalog query -> list of items
+ ├─ @@block-introduction      data["value"] (slate) -> lead paragraph
+ ├─ @@block-html              data["html"] -> raw HTML
+ ├─ @@block-slateTable        data["table"] -> <table>
+ ├─ @@block-toc               slate headings -> anchored ToC
+ ├─ @@block-video             data["url"] -> responsive embed
+ ├─ @@block-maps              data["url"] -> responsive map iframe
  └─ @@block-default           fallback
 ```
 
@@ -140,14 +148,37 @@ only (no throwaway verification scripts). Run via `plonecli test` / `uv run`.
 All phases implemented; full suite green (`uv run --extra test pytest`) and
 `ruff check` clean.
 
-## Out of scope (first pass; add later as new named views)
-
-listing, video, maps, slateTable, html, toc, column/listing variations.
-
 ## Implemented block views
 
-title, description, slate, image, gridBlock (nested), teaser, default (fallback).
+All blocks from the svolto reference are now ported. Each has a per-type named view
+(`@@block-<type>`) registered in `views/configure.zcml`, a `.pt` template, and a
+per-block test under `tests/test_view_<name>_block_view.py`.
+
+| View | Reads | Renders |
+|---|---|---|
+| `@@block-title` | `context.title` | `<h1 class="documentFirstHeading">` |
+| `@@block-description` | `context.description` (or block `data`) | `<p class="documentDescription">` |
+| `@@block-slate` | `data["value"]` (node tree) | escaped HTML via `slate.py` serializer |
+| `@@block-image` | `data["image_scales"]`, `data["url"]`, `data["alt"]` | `<img>` with `srcset` |
+| `@@block-gridBlock` | `data["blocks"]`, `data["blocks_layout"]` | nested re-dispatch in a Bootstrap `row` |
+| `@@block-teaser` | `data["href"][0]` target + block fields | optional image, kicker, title, description, linked to target |
+| `@@block-listing` | catalog query / `data["querystring"]` results | list of items aligned with volto-light-theme markup |
+| `@@block-introduction` | `data["value"]` (slate) | intro/lead paragraph via slate serializer |
+| `@@block-html` | `data["html"]` | raw HTML passthrough |
+| `@@block-slateTable` | `data["table"]` (rows/cells of slate) | `<table>` with serialized cell content |
+| `@@block-toc` | document slate headings | anchored table-of-contents list |
+| `@@block-video` | `data["url"]` (YouTube/Vimeo/file) | responsive embed / `<video>` |
+| `@@block-maps` | `data["url"]` (embed src) | responsive map iframe |
+| `@@block-default` | — | nothing visible (type name in dev) |
+
 `@@block-teaser` reads the resolved target from `data["href"][0]` (or block fields
 when `overwrite` is true), renders an optional image (from `preview_image` or the
 target's `image_scales[image_field]`), kicker, title, description, and links to the
 target path; with no resolvable target it renders title/description without a link.
+
+## Out of scope / future work
+
+- `column`/`listing` template variations beyond the default markup.
+- Search block, accordion, and other add-on blocks not present in the svolto reference.
+- An upgrade step to push the FTI `default_view` change to already-installed sites
+  (see "Entry-point wiring" above — only needed once the addon is released).
