@@ -83,4 +83,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-html"
+      for="*"
+      class=".html_block_view.HtmlBlockView"
+      template="html_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>
