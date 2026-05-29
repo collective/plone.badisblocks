@@ -123,4 +123,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-accordion"
+      for="*"
+      class=".accordion_block_view.AccordionBlockView"
+      template="accordion_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>

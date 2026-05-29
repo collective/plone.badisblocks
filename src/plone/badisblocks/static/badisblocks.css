@@ -205,3 +205,48 @@
   display: block;
   clear: both;
 }
+
+/* ---------------------------------------------------------------------------
+ * Accordion block
+ *
+ * Rendered as native <details>/<summary> panels (no JavaScript). Barceloneta
+ * ships no styling for these, so give the panels a card-like border, a clear
+ * clickable summary, and padded content. Scoped to .block.accordion so nothing
+ * leaks onto bare <details> elsewhere on the page.
+ * ------------------------------------------------------------------------- */
+
+.block.accordion {
+  margin-block: 2rem;
+}
+
+.block.accordion > .headline {
+  margin-block: 0 1rem;
+}
+
+.block.accordion .accordion-panel {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  margin-block: 0 0.5rem;
+}
+
+.block.accordion .accordion-title {
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  list-style-position: inside;
+}
+
+.block.accordion .accordion-title:hover,
+.block.accordion .accordion-title:focus-visible {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.block.accordion .accordion-content {
+  padding: 0 1rem 1rem;
+}
+
+/* Reset Barceloneta's stray top margin on the first content element so the
+ * spacing under the summary is owned by .accordion-content's padding. */
+.block.accordion .accordion-content > :first-child {
+  margin-block-start: 0;
+}

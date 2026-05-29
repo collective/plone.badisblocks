@@ -1,0 +1,14 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     class="block accordion">
+  <h2 class="headline"
+      tal:condition="view/title"
+      tal:content="view/title">accordion title</h2>
+  <details class="accordion-panel"
+           tal:repeat="panel view/panels"
+           tal:attributes="open panel/open;
+                          name panel/name">
+    <summary class="accordion-title" tal:content="panel/title">panel title</summary>
+    <div class="accordion-content"
+         tal:content="structure panel/content">panel content</div>
+  </details>
+</div>

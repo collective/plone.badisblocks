@@ -43,6 +43,7 @@ blocks (the "nested views" requirement).
  ├─ @@block-toc               slate headings -> anchored ToC
  ├─ @@block-video             data["url"] -> responsive embed
  ├─ @@block-maps              data["url"] -> responsive map iframe
+ ├─ @@block-accordion         data["data"] blocks/blocks_layout -> <details> panels (nested)
  └─ @@block-default           fallback
 ```
 
@@ -177,6 +178,7 @@ per-block test under `tests/test_view_<name>_block_view.py`.
 | `@@block-toc` | document slate headings | anchored table-of-contents list |
 | `@@block-video` | `data["url"]` (YouTube/Vimeo/file) | responsive embed / `<video>` |
 | `@@block-maps` | `data["url"]` (embed src) | responsive map iframe |
+| `@@block-accordion` | `data["data"]["blocks"]`, `data["data"]["blocks_layout"]`, panel `title`, `collapsed`, `non_exclusive` | native `<details>`/`<summary>` panels, nested re-dispatch |
 | `@@block-default` | — | nothing visible (type name in dev) |
 
 `@@block-teaser` reads the resolved target from `data["href"][0]` (or block fields
@@ -216,5 +218,5 @@ must own:
 ## Out of scope / future work
 
 - `column`/`listing` template variations beyond the default markup.
-- Search block, accordion, and other add-on blocks not present in the svolto reference.
+- Search block and other add-on blocks not present in the svolto reference.
   (see "Entry-point wiring" above — only needed once the addon is released).

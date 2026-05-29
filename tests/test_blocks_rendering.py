@@ -425,6 +425,107 @@ class TestBlocksRendering:
         assert "row-cols-md-2" in html
         assert html.count("grid-column") == 2
 
+    def test_accordion_block_renders_panels(self):
+        blocks = {
+            "acc": {
+                "@type": "accordion",
+                "title": "FAQ",
+                "data": {
+                    "blocks": {
+                        "p1": {
+                            "@type": "accordionPanel",
+                            "title": "First question",
+                            "blocks": {
+                                "s1": {
+                                    "@type": "slate",
+                                    "value": [
+                                        {
+                                            "type": "p",
+                                            "children": [{"text": "First answer"}],
+                                        }
+                                    ],
+                                }
+                            },
+                            "blocks_layout": {"items": ["s1"]},
+                        },
+                        "p2": {
+                            "@type": "accordionPanel",
+                            "title": "Second question",
+                            "blocks": {
+                                "s2": {
+                                    "@type": "slate",
+                                    "value": [
+                                        {
+                                            "type": "p",
+                                            "children": [{"text": "Second answer"}],
+                                        }
+                                    ],
+                                }
+                            },
+                            "blocks_layout": {"items": ["s2"]},
+                        },
+                    },
+                    "blocks_layout": {"items": ["p1", "p2"]},
+                },
+            }
+        }
+        html = self._render(blocks, ["acc"])
+        assert "block accordion" in html
+        assert "FAQ" in html
+        assert html.count("accordion-panel") == 2
+        assert "First question" in html
+        assert "First answer" in html
+        assert "Second question" in html
+        assert "Second answer" in html
+        # panels render in layout order
+        assert html.index("First question") < html.index("Second question")
+
+    def test_accordion_block_collapsed_by_default(self):
+        blocks = {
+            "acc": {
+                "@type": "accordion",
+                "data": {
+                    "blocks": {
+                        "p1": {
+                            "@type": "accordionPanel",
+                            "title": "Q",
+                            "blocks": {},
+                            "blocks_layout": {"items": []},
+                        }
+                    },
+                    "blocks_layout": {"items": ["p1"]},
+                },
+            }
+        }
+        html = self._render(blocks, ["acc"])
+        # collapsed (default): no open attribute; exclusive (default): grouped by name
+        assert "open" not in html
+        assert 'name="accordion-acc"' in html
+
+    def test_accordion_block_expanded_non_exclusive(self):
+        blocks = {
+            "acc": {
+                "@type": "accordion",
+                "collapsed": False,
+                "non_exclusive": True,
+                "data": {
+                    "blocks": {
+                        "p1": {
+                            "@type": "accordionPanel",
+                            "title": "Q",
+                            "blocks": {},
+                            "blocks_layout": {"items": []},
+                        }
+                    },
+                    "blocks_layout": {"items": ["p1"]},
+                },
+            }
+        }
+        html = self._render(blocks, ["acc"])
+        # not collapsed -> open; non_exclusive -> no grouping name
+        assert "open" in html
+        assert "name=" not in html
+
     def test_blocks_render_in_layout_order(self):
         blocks = {
             "t": {"@type": "title"},

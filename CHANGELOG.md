@@ -6,7 +6,7 @@
 - Add Classic UI renderer for Volto/Seven blocks via named BrowserViews dispatching
   by block `@type`, with a Python slate serializer.
 - Add block renderers: title, description, slate, image, gridBlock (nested), teaser,
-  listing, introduction, html, slateTable, toc, video, and maps.
+  listing, introduction, html, slateTable, toc, video, maps, and accordion.
 - Wire `@@blocks-view` as the default view for Document, News Item, and Event.
 - Hide plone.volto's "voltobackendwarning" viewlet while the add-on is installed,
   since blocks are rendered in Classic UI on purpose.
