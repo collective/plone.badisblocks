@@ -81,7 +81,8 @@ pnpm-debug.log*
 .vite/
 
 # Plone / Zope runtime data
-var/
+var/*
+!var/.gitkeep
 var/*/inituser
 var/*/var/
 *.fs
