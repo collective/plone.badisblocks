@@ -75,4 +75,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-introduction"
+      for="*"
+      class=".introduction_block_view.IntroductionBlockView"
+      template="introduction_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>
