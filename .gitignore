@@ -81,6 +81,7 @@ pnpm-debug.log*
 .vite/
 
 # Plone / Zope runtime data
+var/
 var/*/inituser
 var/*/var/
 *.fs
