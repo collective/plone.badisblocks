@@ -1,0 +1,200 @@
+/* plone.badisblocks — Classic UI block styles.
+ *
+ * The block renderers ship no presentational CSS of their own and otherwise
+ * inherit Barceloneta. The listing block is the exception: its semantic markup
+ * is a <ul> of items, which the browser renders with disc markers and a 32px
+ * indent — wrong for a content listing. This file removes that marker/indent and
+ * gives the listing the vertical rhythm volto-light-theme uses, without pulling
+ * in the whole theme. All rules are scoped to .block.listing so nothing leaks
+ * onto the surrounding page. */
+
+.block.listing {
+  margin-block: 2rem;
+}
+
+.block.listing > .headline {
+  margin-block: 0 1rem;
+}
+
+/* A listing is a list of content, not a bulleted list: drop the default marker
+ * and the indent the browser reserves for it, and own the inter-item spacing. */
+.block.listing .items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.block.listing .listing-item {
+  margin: 0;
+}
+
+.block.listing .listing-item .card,
+.block.listing .listing-item .card-inner,
+.block.listing .listing-item .card-summary {
+  margin: 0;
+}
+
+/* Reset the stray vertical margins Barceloneta puts on the inner text elements
+ * so spacing inside a card is deliberate rather than inherited. */
+.block.listing .listing-item .card-summary > * {
+  margin-block: 0;
+}
+
+.block.listing .listing-item .headline {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.block.listing .listing-item .title {
+  margin-block: 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.block.listing .listing-item .title a {
+  text-decoration: none;
+}
+
+.block.listing .listing-item .title a:hover,
+.block.listing .listing-item .title a:focus-visible {
+  text-decoration: underline;
+}
+
+.block.listing .listing-item .description {
+  margin-block: 0.5rem 0;
+}
+
+/* Summary variation: a fixed-width preview image beside the text. */
+.block.listing.variation-summary .card-inner {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.block.listing.variation-summary .image-wrapper {
+  flex: 0 0 auto;
+}
+
+.block.listing.variation-summary .image-wrapper img {
+  display: block;
+  width: 200px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.block.listing.variation-summary .card-summary {
+  flex: 1 1 auto;
+}
+
+/* Stack the image above the text on narrow viewports. */
+@media (max-width: 768px) {
+  .block.listing.variation-summary .card-inner {
+    flex-direction: column;
+  }
+
+  .block.listing.variation-summary .image-wrapper img {
+    width: 100%;
+  }
+}
+
+.block.listing .footer {
+  margin-block: 1.5rem 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Block alignment + media sizing
+ *
+ * The video and maps views emit a has--align--<value> class (default "full"),
+ * mirroring Volto, but ship no CSS to back it. This ports volto-light-theme's
+ * model: a block is centered to one of three container widths
+ * (theme/_layout.scss: center = narrow 620px, wide = 940px, full = layout
+ * width), and left/right-aligned media floats to the side at half width with
+ * content wrapping beside it (theme/blocks/_maps.scss). The embeds also get a
+ * 16:9 box because the iframes/<video> carry no intrinsic size (a bare iframe
+ * would fall back to 300x150). Scoped to the media blocks that carry an align
+ * setting so text blocks keep their natural flow.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  --bb-container-wide: 940px;
+  --bb-container-narrow: 620px;
+  --bb-embed-aspect-ratio: 16 / 9;
+}
+
+/* Container-width alignment: center is narrowest, then wide, full is widest. */
+.block.video.has--align--center,
+.block.maps.has--align--center {
+  max-width: var(--bb-container-narrow);
+  margin-inline: auto;
+}
+
+.block.video.has--align--wide,
+.block.maps.has--align--wide {
+  max-width: var(--bb-container-wide);
+  margin-inline: auto;
+}
+
+.block.video.has--align--full,
+.block.maps.has--align--full {
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* Left / right: float the embed to the side at half width; content wraps.
+ * width (not just max-width) is required — a floated box shrinks to its content,
+ * and the embed iframe has only a 300px default intrinsic width to offer. */
+.block.video.has--align--left,
+.block.maps.has--align--left {
+  float: left;
+  width: 50%;
+  margin: 0 1.5rem 1.5rem 0;
+}
+
+.block.video.has--align--right,
+.block.maps.has--align--right {
+  float: right;
+  width: 50%;
+  margin: 0 0 1.5rem 1.5rem;
+}
+
+/* Stack side-aligned embeds full width on narrow viewports (VLT breakpoint). */
+@media (max-width: 768px) {
+  .block.video.has--align--left,
+  .block.video.has--align--right,
+  .block.maps.has--align--left,
+  .block.maps.has--align--right {
+    float: none;
+    width: 100%;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+/* Responsive 16:9 embeds (the iframes/<video> carry no intrinsic size). */
+.block.video .video-wrapper,
+.block.maps .maps-wrapper {
+  width: 100%;
+  aspect-ratio: var(--bb-embed-aspect-ratio);
+}
+
+.block.video .video-wrapper iframe,
+.block.video .video-wrapper video,
+.block.maps .maps-wrapper iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Contain the floats so the page doesn't collapse around an aligned embed. */
+.blocks-view::after {
+  content: "";
+  display: block;
+  clear: both;
+}

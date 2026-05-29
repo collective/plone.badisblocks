@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:plone="http://namespaces.plone.org/plone"
@@ -8,6 +9,19 @@
   <i18n:registerTranslations directory="locales" />
 
   <include file="permissions.zcml" />
+
+  <browser:resourceDirectory
+      name="plone.badisblocks"
+      directory="static"
+      />
+
+  <browser:viewlet
+      name="plone.badisblocks.css"
+      manager="plone.app.layout.viewlets.interfaces.IHtmlHead"
+      layer=".interfaces.IPloneBadisblocksLayer"
+      template="views/badisblocks_css.pt"
+      permission="zope2.View"
+      />
 
   <genericsetup:registerProfile
       name="default"

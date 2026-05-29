@@ -42,3 +42,24 @@ class TestViewMapsBlockView:
             name="block-maps",
         )
         assert view.__name__ == "block-maps"
+
+    def _view(self, data):
+        view = getMultiAdapter((self.context, TestRequest()), name="block-maps")
+        view.data = data
+        return view
+
+    def test_css_class_defaults_to_full(self):
+        """Without an align setting the map is full width, like Volto."""
+        assert self._view({}).css_class == "block maps has--align--full"
+
+    @pytest.mark.parametrize("align", ["left", "right", "center", "wide", "full"])
+    def test_css_class_reflects_styles_align(self, align):
+        """``styles.align`` from Volto becomes a has--align--<value> class."""
+        view = self._view({"styles": {"align": align}})
+        assert view.css_class == f"block maps has--align--{align}"
+
+    def test_css_class_falls_back_to_top_level_align(self):
+        """Older data carries ``align`` at the top level rather than in styles."""
+        assert self._view({"align": "center"}).css_class == (
+            "block maps has--align--center"
+        )

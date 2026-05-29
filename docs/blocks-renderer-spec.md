@@ -176,6 +176,28 @@ when `overwrite` is true), renders an optional image (from `preview_image` or th
 target's `image_scales[image_field]`), kicker, title, description, and links to the
 target path; with no resolvable target it renders title/description without a link.
 
+## Styling (CSS)
+
+The renderers otherwise inherit Barceloneta, but ship one small stylesheet,
+`static/badisblocks.css`, registered as the `++resource++plone.badisblocks`
+resource directory and linked into the document head by an `IHtmlHead` viewlet
+bound to `IPloneBadisblocksLayer` (so it loads only when the addon is installed
+and applies on restart, with no GenericSetup reimport). It covers two things CSS
+must own:
+
+- **Listing** — the semantic `<ul>` would otherwise render with disc markers and
+  a 32px indent; the stylesheet drops both, owns the inter-item spacing, and lays
+  out the summary variation as image-beside-text (stacking under 768px).
+- **Block alignment** — `@@block-video` and `@@block-maps` emit a
+  `has--align--<value>` class (from `data["styles"]["align"]`, falling back to
+  `data["align"]`, default `full`), mirroring Volto. The stylesheet backs those
+  classes with volto-light-theme's model (`theme/_layout.scss`): `center` →
+  narrow (620px), `wide` → 940px, `full` → full content width, each centered;
+  `left`/`right` float the embed to the side at 50% width with content wrapping
+  beside it (and stack full-width under 768px). Both embeds get a 16:9 box since
+  the iframes/`<video>` carry no intrinsic size. The `css_class` derivation is
+  covered by the video/maps view tests.
+
 ## Out of scope / future work
 
 - `column`/`listing` template variations beyond the default markup.

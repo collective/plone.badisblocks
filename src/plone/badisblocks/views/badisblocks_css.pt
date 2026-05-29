@@ -1,0 +1,5 @@
+<tal:css xmlns:tal="http://xml.zope.org/namespaces/tal"
+         tal:define="portal_url context/@@plone_portal_state/portal_url"><link
+    rel="stylesheet" type="text/css"
+    tal:attributes="href string:${portal_url}/++resource++plone.badisblocks/badisblocks.css" />
+</tal:css>
