@@ -1,15 +1,15 @@
 """IntroductionBlockView browser view.
 
-Render an introduction block (slate-style rich text)
+Renders an introduction block. Like the slate block, its content is a
+``value`` node tree; it differs only in its wrapping markup.
 """
-from Products.Five.browser import BrowserView
+
+from plone.badisblocks.views.base import BaseBlockView
+from plone.badisblocks.views.slate import render_nodes
 
 
-class IntroductionBlockView(BrowserView):
-    """Render an introduction block (slate-style rich text)"""
+class IntroductionBlockView(BaseBlockView):
+    """Render an introduction block's node tree as safe HTML."""
 
-    # If you need to override the template registered in configure.zcml:
-    # index = ViewPageTemplateFile("introduction_block_view.pt")
-
-    def __call__(self):
-        return self.index()
+    def render(self):
+        return render_nodes((self.data or {}).get("value"))

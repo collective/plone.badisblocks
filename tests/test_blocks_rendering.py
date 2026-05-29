@@ -60,6 +60,41 @@ class TestBlocksRendering:
         html = self._render(blocks, ["a"])
         assert "<p>Hello <strong>bold</strong></p>" in html
 
+    def test_introduction_block(self):
+        blocks = {
+            "a": {
+                "@type": "introduction",
+                "value": [
+                    {
+                        "type": "p",
+                        "children": [
+                            {"text": "Intro "},
+                            {"type": "em", "children": [{"text": "lead"}]},
+                        ],
+                    }
+                ],
+            }
+        }
+        html = self._render(blocks, ["a"])
+        assert "block introduction" in html
+        assert "<p>Intro <em>lead</em></p>" in html
+
+    def test_html_block(self):
+        blocks = {
+            "a": {
+                "@type": "html",
+                "html": "<aside>Raw <b>markup</b></aside>",
+                "styles": {"align": "center"},
+            }
+        }
+        html = self._render(blocks, ["a"])
+        assert "<aside>Raw <b>markup</b></aside>" in html
+        assert "has--align--center" in html
+
+    def test_html_block_empty_renders_nothing(self):
+        html = self._render({"a": {"@type": "html", "html": "   "}}, ["a"])
+        assert "<div" not in html
+
     def test_unknown_block_falls_back_to_default(self):
         html = self._render({"a": {"@type": "nonexistent"}}, ["a"])
         assert 'data-block-type="nonexistent"' in html

@@ -1,15 +1,29 @@
 """HtmlBlockView browser view.
 
-Render a raw HTML block
+Renders a raw HTML block. The stored ``html`` is editor-provided content and
+is emitted verbatim (``structure``), mirroring how Volto renders this block.
 """
-from Products.Five.browser import BrowserView
+
+from plone.badisblocks.views.base import BaseBlockView
 
 
-class HtmlBlockView(BrowserView):
-    """Render a raw HTML block"""
+class HtmlBlockView(BaseBlockView):
+    """Render a raw HTML block."""
 
-    # If you need to override the template registered in configure.zcml:
-    # index = ViewPageTemplateFile("html_block_view.pt")
+    @property
+    def html(self):
+        return (self.data or {}).get("html") or ""
 
-    def __call__(self):
-        return self.index()
+    @property
+    def has_content(self):
+        return bool(self.html.strip())
+
+    @property
+    def css_class(self):
+        """Build the wrapper class list, matching the Volto block markup."""
+        styles = (self.data or {}).get("styles") or {}
+        classes = ["block", "html"]
+        classes.append(f"has--align--{styles.get('align') or 'left'}")
+        if styles.get("customCss"):
+            classes.append(styles["customCss"])
+        return " ".join(classes)
