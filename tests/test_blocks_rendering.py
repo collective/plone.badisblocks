@@ -526,6 +526,151 @@ class TestBlocksRendering:
         assert "open" in html
         assert "name=" not in html
 
+    def test_banner_block_renders_image_and_text(self):
+        blocks = {
+            "b": {
+                "@type": "banner",
+                "text": "Big headline",
+                "additionalText": "A supporting line",
+                "theme": "default",
+                "url": "http://nohost/plone/doc/hero.jpg",
+                "image_scales": {
+                    "image": [
+                        {
+                            "download": "@@images/image-2000.jpeg",
+                            "width": 2000,
+                            "height": 1000,
+                            "scales": {
+                                "large": {
+                                    "download": "@@images/image-800.jpeg",
+                                    "width": 800,
+                                },
+                                "preview": {
+                                    "download": "@@images/image-400.jpeg",
+                                    "width": 400,
+                                },
+                            },
+                        }
+                    ]
+                },
+            }
+        }
+        html = self._render(blocks, ["b"])
+        assert "block banner" in html
+        assert "has--theme--default" in html
+        assert "Big headline" in html
+        assert "A supporting line" in html
+        # image src built from url path + download; srcset from scales
+        assert 'src="/plone/doc/hero.jpg/@@images/image-2000.jpeg"' in html
+        assert "/plone/doc/hero.jpg/@@images/image-800.jpeg 800w" in html
+        assert "/plone/doc/hero.jpg/@@images/image-400.jpeg 400w" in html
+
+    def test_banner_block_without_image(self):
+        blocks = {
+            "b": {
+                "@type": "banner",
+                "text": "Headline only",
+            }
+        }
+        html = self._render(blocks, ["b"])
+        assert "block banner" in html
+        assert "Headline only" in html
+        # no image data -> no <img> rendered
+        assert "<img" not in html
+
+    def test_button_block_renders_link(self):
+        blocks = {
+            "b": {
+                "@type": "__button",
+                "title": "Read more",
+                "href": [{"@id": "http://localhost:8080/Plone/target-page"}],
+                "styles": {"align": "center"},
+            }
+        }
+        html = self._render(blocks, ["b"])
+        assert "block button has--align--center" in html
+        assert 'href="/Plone/target-page"' in html
+        assert ">Read more<" in html
+        assert 'class="button"' in html
+
+    def test_button_block_new_tab(self):
+        blocks = {
+            "b": {
+                "@type": "__button",
+                "title": "External",
+                "href": [{"@id": "https://example.com"}],
+                "openLinkInNewTab": True,
+            }
+        }
+        html = self._render(blocks, ["b"])
+        assert 'target="_blank"' in html
+        assert "noopener" in html
+
+    def test_button_block_without_text_renders_nothing(self):
+        html = self._render({"b": {"@type": "__button"}}, ["b"])
+        assert "block button" not in html
+
+    def test_slider_block_renders_slides(self):
+        target = {
+            "@id": "http://localhost:8080/Plone/slide-target",
+            "title": "Slide Target",
+            "description": "Slide description",
+            "image_field": "image",
+            "image_scales": {
+                "image": [
+                    {
+                        "download": "@@images/slide.png",
+                        "width": 1600,
+                        "height": 900,
+                        "scales": {
+                            "large": {
+                                "download": "@@images/slide-800.png",
+                                "width": 800,
+                            }
+                        },
+                    }
+                ]
+            },
+        }
+        blocks = {
+            "s": {
+                "@type": "slider",
+                "slides": [
+                    {
+                        "href": [target],
+                        "head_title": "Featured",
+                        "buttonText": "Discover",
+                    },
+                    {
+                        "href": [{"@id": "http://localhost:8080/Plone/other", "title": "Other"}],
+                        "hideButton": True,
+                        "flagAlign": "right",
+                    },
+                ],
+            }
+        }
+        html = self._render(blocks, ["s"])
+        assert "block slider" in html
+        assert html.count("slider-slide has--flagAlign") == 2
+        # first slide: target fields, image with srcset, kicker, CTA button
+        assert "Slide Target" in html
+        assert "Slide description" in html
+        assert "Featured" in html
+        assert 'href="/Plone/slide-target"' in html
+        assert "/Plone/slide-target/@@images/slide.png" in html
+        assert "/Plone/slide-target/@@images/slide-800.png 800w" in html
+        assert ">Discover<" in html
+        # second slide: button hidden, right flag alignment
+        assert "Other" in html
+        assert "has--flagAlign--right" in html
+        # slides render in order
+        assert html.index("Slide Target") < html.index("Other")
+
+    def test_slider_block_empty_renders_no_slides(self):
+        html = self._render({"s": {"@type": "slider", "slides": []}}, ["s"])
+        assert "block slider" in html
+        assert "slider-slide" not in html
+
     def test_blocks_render_in_layout_order(self):
         blocks = {
             "t": {"@type": "title"},

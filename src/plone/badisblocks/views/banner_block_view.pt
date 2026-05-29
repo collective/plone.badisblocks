@@ -1,0 +1,21 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class">
+  <div class="banner container">
+    <img class="image"
+         loading="lazy"
+         tal:condition="view/src"
+         tal:attributes="src view/src;
+                        srcset view/srcset;
+                        alt view/alt" />
+    <div class="banner-inner-container">
+      <div class="text">
+        <p class="banner-title"
+           tal:condition="view/text"
+           tal:content="view/text">banner text</p>
+        <p class="banner-additional-text"
+           tal:condition="view/additional_text"
+           tal:content="view/additional_text">additional text</p>
+      </div>
+    </div>
+  </div>
+</div>

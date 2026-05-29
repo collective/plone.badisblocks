@@ -250,3 +250,253 @@
 .block.accordion .accordion-content > :first-child {
   margin-block-start: 0;
 }
+
+/* ---------------------------------------------------------------------------
+ * Banner (hero) block
+ *
+ * Mirrors volto-light-theme's banner: a fixed-height hero where the background
+ * image and the text share a single CSS-grid cell (grid-area 1/1) so the text
+ * overlays the image — no absolute positioning. The text sits top-left within
+ * the centered content width, in white. A left-to-right black-to-transparent
+ * gradient on the inner container darkens the left side so the white text stays
+ * legible (VLT applies the same scrim). The element also carries Bootstrap's
+ * .container class, whose max-width/padding we neutralise so the banner spans
+ * the content column (Classic UI's equivalent of VLT's wider "layout" width).
+ * ------------------------------------------------------------------------- */
+
+.block.banner {
+  margin-block: 2rem;
+}
+
+.block.banner .banner.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  /* Fixed row height (VLT uses 300px); the image is cropped to it via
+   * object-fit. Without a definite row the grid would auto-size to the
+   * image's intrinsic height (e.g. 864px for a 6000x4000 photo). */
+  grid-template-rows: clamp(220px, 30vw, 320px);
+  /* Override Bootstrap .container so the hero fills the content column. */
+  max-width: none;
+  width: 100%;
+  margin-inline: 0;
+  padding-inline: 0;
+  overflow: hidden;
+}
+
+/* Stack the image and the text in the same cell so the text overlays. */
+.block.banner .banner.container > * {
+  grid-area: 1 / 1;
+  min-height: 0;
+}
+
+.block.banner img.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.block.banner .banner-inner-container {
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  /* Left scrim for legibility of the white text (matches VLT). */
+  background-image: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.block.banner .text {
+  width: 100%;
+  max-width: 940px;
+  margin-inline: auto;
+  padding: 50px 1rem;
+}
+
+/* VLT renders both the title and the additional line at the same weight/size. */
+.block.banner .text p {
+  margin-block: 0;
+  color: #fff;
+  font-size: 2.0625rem;
+  line-height: 1.27;
+  font-weight: 300;
+}
+
+@media (max-width: 768px) {
+  .block.banner .text {
+    padding-block: 1.5rem;
+  }
+
+  .block.banner .text p {
+    font-size: 1.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Button block (@type __button)
+ *
+ * A single call-to-action link. has--align--{left,center,right} positions it in
+ * the content column (Volto's blockAlignment / upstream inneralign). Barceloneta
+ * ships no button utility we can lean on, so give the link a self-contained
+ * pill style. The non-linked fallback (.button as a <span>) shares the look.
+ * ------------------------------------------------------------------------- */
+
+.block.button {
+  margin-block: 1.5rem;
+  display: flex;
+}
+
+.block.button.has--align--left {
+  justify-content: flex-start;
+}
+
+.block.button.has--align--center {
+  justify-content: center;
+}
+
+.block.button.has--align--right {
+  justify-content: flex-end;
+}
+
+.block.button .button {
+  display: inline-block;
+  padding: 0.625rem 1.5rem;
+  border-radius: 4px;
+  background: #1a1a1a;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.button:hover,
+a.button:focus-visible {
+  background: #333;
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Slider / carousel block (@type slider)
+ *
+ * Volto drives the carousel with JavaScript (Embla); this Classic UI port lays
+ * the slides out in a horizontal CSS scroll-snap track so the block works with
+ * no JS — one slide fills the width, the rest are reachable by swipe/scroll.
+ * Each slide is a teaser whose text overlays the image (like the banner): the
+ * image and the text share one grid cell, with a scrim for legibility.
+ * has--flagAlign--{left,right} pins the text block to that side.
+ * ------------------------------------------------------------------------- */
+
+.block.slider {
+  margin-block: 2rem;
+}
+
+.block.slider .slider-slides {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Hide the scrollbar but keep the track scrollable/swipeable. */
+  scrollbar-width: none;
+}
+
+.block.slider .slider-slides::-webkit-scrollbar {
+  display: none;
+}
+
+.block.slider .slider-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+.block.slider .teaser-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: clamp(260px, 40vw, 420px);
+  overflow: hidden;
+  border-radius: 6px;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Stack the image and the text in the same cell so the text overlays. */
+.block.slider .teaser-item > * {
+  grid-area: 1 / 1;
+  min-height: 0;
+}
+
+.block.slider .highlight-image-wrapper {
+  position: relative;
+}
+
+.block.slider .slider-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Bottom scrim so the white text stays legible over any image. */
+.block.slider .highlight-image-wrapper.gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0) 60%
+  );
+}
+
+.block.slider .teaser-item-title {
+  z-index: 1;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 940px;
+  margin-inline: auto;
+  padding: 1.5rem;
+}
+
+/* Without an image there is no scrim, so the slide needs its own background. */
+.block.slider .teaser-item:not(:has(.highlight-image-wrapper)) {
+  background: #1a1a1a;
+}
+
+.block.slider .has--flagAlign--right .teaser-item-title {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.block.slider .teaser-item-title .supertitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.block.slider .teaser-item-title h2,
+.block.slider .teaser-item-title p {
+  margin-block: 0;
+  color: #fff;
+}
+
+.block.slider .teaser-item-title h2 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.block.slider .teaser-item-title .button {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  background: #fff;
+  color: #1a1a1a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.block.slider .has--flagAlign--right .teaser-item-title .button {
+  align-self: flex-end;
+}

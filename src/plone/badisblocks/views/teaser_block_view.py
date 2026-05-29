@@ -4,13 +4,16 @@ Renders a teaser block. After block serialization ``data["href"][0]`` holds the
 resolved target (a brain summary); with ``overwrite`` false the serializer already
 copies the target's title/description/head_title onto ``data`` itself, so ``data``'s
 values are authoritative either way. The image comes from an overwritten
-``preview_image`` or the target's ``image_scales[image_field]``.
+``preview_image`` or the target's ``image_scales[image_field]`` (resolved by the
+shared ``teaser_image`` helper, which the slider block reuses per slide).
 """
 
 from urllib.parse import urlparse
 
-from plone import api
 from plone.badisblocks.views.base import BaseBlockView
+from plone.badisblocks.views.teaser_image import image_base_path
+from plone.badisblocks.views.teaser_image import resolve_image
+from plone.badisblocks.views.teaser_image import teaser_image
 
 
 class TeaserBlockView(BaseBlockView):
@@ -54,52 +57,27 @@ class TeaserBlockView(BaseBlockView):
 
     @property
     def _image(self):
-        data = self.data or {}
-        preview = data.get("preview_image")
-        if preview:
-            return preview[0]
-        target = self.target or {}
-        field = target.get("image_field")
-        scales = target.get("image_scales") or {}
-        if field and scales.get(field):
-            return scales[field][0]
-        return None
+        return resolve_image((self.data or {}).get("preview_image"), self.target)
 
     @property
     def image_base_path(self):
-        img = self._image or {}
-        base = img.get("base_path")
-        if base:
-            # plone.volto's preview-image adapter stores base_path relative to
-            # the navigation root (it strips portal_url), which is what Volto
-            # wants but drops the site-id prefix Classic UI is served under
-            # (e.g. ``/Plone``). Re-add it so the image resolves.
-            prefix = urlparse(api.portal.get().absolute_url()).path
-            return f"{prefix}{base}"
-        url = (self.target or {}).get("@id")
-        return urlparse(url).path if url else ""
+        return image_base_path(self._image, self.target)
+
+    @property
+    def _resolved_image(self):
+        return teaser_image((self.data or {}).get("preview_image"), self.target)
 
     @property
     def image_src(self):
-        img = self._image
-        if not img or not img.get("download"):
-            return ""
-        return f"{self.image_base_path}/{img['download']}"
+        img = self._resolved_image
+        return img["src"] if img else ""
 
     @property
     def image_srcset(self):
-        img = self._image
-        if not img:
-            return None
-        scales = img.get("scales") or {}
-        entries = [
-            f"{self.image_base_path}/{v['download']} {v['width']}w"
-            for v in scales.values()
-            if v.get("download") and v.get("width")
-        ]
-        return ", ".join(entries) or None
+        img = self._resolved_image
+        return img["srcset"] if img else None
 
     @property
     def image_alt(self):
-        img = self._image or {}
-        return img.get("alt") or self.title or ""
+        img = self._resolved_image
+        return (img["alt"] if img else "") or self.title or ""

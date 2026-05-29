@@ -1,0 +1,36 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:attributes="class view/css_class">
+  <div class="slider-slides"
+       tal:condition="view/slides">
+    <div tal:repeat="slide view/slides"
+         tal:attributes="class string:slider-slide has--flagAlign--${slide/flag_align}">
+      <a class="teaser-item top"
+         tal:attributes="href slide/href;
+                        target slide/target;
+                        rel slide/rel"
+         tal:omit-tag="not:slide/href">
+        <span class="highlight-image-wrapper gradient"
+              tal:condition="slide/image_src">
+          <img class="slider-image"
+               loading="lazy"
+               tal:attributes="src slide/image_src;
+                              srcset slide/image_srcset;
+                              alt slide/image_alt" />
+        </span>
+        <span class="teaser-item-title">
+          <span class="supertitle"
+                tal:condition="slide/head_title"
+                tal:content="slide/head_title">kicker</span>
+          <h2 tal:condition="slide/title"
+              tal:content="slide/title">title</h2>
+          <p class="description"
+             tal:condition="slide/description"
+             tal:content="slide/description">description</p>
+          <span class="button"
+                tal:condition="slide/show_button"
+                tal:content="slide/button_text">Continue reading</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</div>

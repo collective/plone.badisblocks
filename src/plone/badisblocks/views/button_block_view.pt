@@ -1,0 +1,13 @@
+<tal:button xmlns:tal="http://xml.zope.org/namespaces/tal"
+            tal:condition="view/text"
+   ><div tal:attributes="class view/css_class">
+  <a class="button"
+     tal:condition="view/href"
+     tal:attributes="href view/href;
+                    target view/target;
+                    rel view/rel"
+     tal:content="view/text">Button text</a>
+  <span class="button"
+        tal:condition="not:view/href"
+        tal:content="view/text">Button text</span>
+</div></tal:button>
