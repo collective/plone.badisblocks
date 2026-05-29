@@ -12,3 +12,5 @@
   since blocks are rendered in Classic UI on purpose.
 - Add upgrade step 1000 → 1001 reapplying the default profile so already-installed
   sites pick up the `blocks-view` default view and the hidden backend warning.
+- Fix teaser block preview image not resolving in Classic UI: re-add the site-id
+  path prefix that plone.volto strips from the `preview_image` `base_path`.

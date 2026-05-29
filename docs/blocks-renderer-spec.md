@@ -184,6 +184,13 @@ when `overwrite` is true), renders an optional image (from `preview_image` or th
 target's `image_scales[image_field]`), kicker, title, description, and links to the
 target path; with no resolvable target it renders title/description without a link.
 
+**Image path caveat:** a `preview_image`'s `base_path` is produced by `plone.volto`'s
+`PreviewImageScalesFieldAdapter` as `linked_image.absolute_url().replace(portal_url, "")`
+— navigation-root relative (site-id prefix stripped), which is what Volto serves but not
+Classic UI. `image_base_path` re-adds the portal path prefix (`urlparse(portal.absolute_url()).path`,
+e.g. `/Plone`, empty under VHM) so the `@@images` URL resolves. The `image_scales[image_field]`
+fallback uses the target `@id` path, which already carries the prefix.
+
 ## Styling (CSS)
 
 The renderers otherwise inherit Barceloneta, but ship one small stylesheet,

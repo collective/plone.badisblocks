@@ -9,6 +9,7 @@ values are authoritative either way. The image comes from an overwritten
 
 from urllib.parse import urlparse
 
+from plone import api
 from plone.badisblocks.views.base import BaseBlockView
 
 
@@ -67,8 +68,14 @@ class TeaserBlockView(BaseBlockView):
     @property
     def image_base_path(self):
         img = self._image or {}
-        if img.get("base_path"):
-            return img["base_path"]
+        base = img.get("base_path")
+        if base:
+            # plone.volto's preview-image adapter stores base_path relative to
+            # the navigation root (it strips portal_url), which is what Volto
+            # wants but drops the site-id prefix Classic UI is served under
+            # (e.g. ``/Plone``). Re-add it so the image resolves.
+            prefix = urlparse(api.portal.get().absolute_url()).path
+            return f"{prefix}{base}"
         url = (self.target or {}).get("@id")
         return urlparse(url).path if url else ""
 
