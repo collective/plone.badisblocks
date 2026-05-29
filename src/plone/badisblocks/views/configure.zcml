@@ -91,4 +91,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-slateTable"
+      for="*"
+      class=".slate_table_block_view.SlateTableBlockView"
+      template="slate_table_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>
