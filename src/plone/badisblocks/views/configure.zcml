@@ -203,4 +203,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-leadimage"
+      for="*"
+      class=".leadimage_block_view.LeadImageBlockView"
+      template="leadimage_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>

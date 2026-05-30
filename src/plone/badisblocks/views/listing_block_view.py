@@ -75,9 +75,15 @@ def _image_view_model(item):
     width/height use a small preview scale (not the full original) so the card
     image renders at a Volto-like size. Returns ``None`` when the item has no
     usable image.
+
+    ``image_field`` is sometimes absent in summaries (e.g. Image content carries
+    ``image_scales`` but no ``image_field``); fall back to the ``image`` key, then
+    the first available field.
     """
-    field = item.get("image_field")
     scales = item.get("image_scales") or {}
+    field = item.get("image_field")
+    if not field:
+        field = "image" if "image" in scales else next(iter(scales), None)
     images = scales.get(field) or [] if field else []
     img = images[0] if images else None
     if not img or not img.get("download"):
@@ -174,6 +180,17 @@ class ListingBlockView(BaseBlockView):
     def show_image(self):
         """Preview images are only shown in the summary variation."""
         return self.variation == "summary"
+
+    @property
+    def is_image_gallery(self):
+        """The imageGallery variation renders a grid of item images instead of
+        the card list (Volto core's ``imageGallery`` listing variation)."""
+        return self.variation == "imageGallery"
+
+    @property
+    def gallery_items(self):
+        """Items that have a usable image, for the imageGallery variation."""
+        return [item for item in self.items if item.get("image")]
 
     def _resolve_items(self):
         querystring = (self.data or {}).get("querystring") or {}

@@ -1177,3 +1177,81 @@ a.button:focus-visible {
   background: rgba(0, 0, 0, 0.7);
 }
 
+/* ---------------------------------------------------------------------------
+ * Lead image block (@type leadimage)
+ *
+ * Renders the context's own image field. Mirrors Volto's LeadImage markup
+ * (p.block.image.align <align>); the alignment word (center/left/right/full)
+ * sets how the image sits. Scoped to .block.image.align so the regular image
+ * block (which has no align word) is unaffected.
+ * ------------------------------------------------------------------------- */
+.block.image.align {
+  margin-block: 2rem;
+}
+
+.block.image.align img {
+  max-width: 100%;
+  height: auto;
+}
+
+.block.image.align.center {
+  text-align: center;
+}
+
+.block.image.align.left {
+  float: left;
+  margin: 0 1.5rem 1.5rem 0;
+  max-width: 50%;
+}
+
+.block.image.align.right {
+  float: right;
+  margin: 0 0 1.5rem 1.5rem;
+  max-width: 50%;
+}
+
+.block.image.align.full img,
+.block.image.align img.full-width {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .block.image.align.left,
+  .block.image.align.right {
+    float: none;
+    max-width: 100%;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Listing imageGallery variation (@type listing, variation imageGallery)
+ *
+ * Volto renders this as an interactive react-image-gallery slideshow; here it is
+ * a responsive grid of the items' images, each linking to its content. Works
+ * without JS. Reuses the listing block's item image model.
+ * ------------------------------------------------------------------------- */
+.block.listing.variation-imageGallery .image-gallery-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.block.listing.variation-imageGallery .image-gallery-item {
+  margin: 0;
+}
+
+.block.listing.variation-imageGallery .image-gallery-item a {
+  display: block;
+}
+
+.block.listing.variation-imageGallery .image-gallery-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 6px;
+}

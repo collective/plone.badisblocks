@@ -1,0 +1,11 @@
+<p xmlns:tal="http://xml.zope.org/namespaces/tal"
+   tal:condition="view/has_image"
+   tal:define="tag view/image_tag"
+   tal:attributes="class view/css_class"
+   tal:omit-tag="not:tag"
+   ><a tal:condition="view/href"
+      tal:attributes="href view/href;
+                     target view/target;
+                     rel view/rel"
+   ><tal:img tal:replace="structure tag" /></a
+   ><tal:img tal:condition="not:view/href" tal:replace="structure tag" /></p>

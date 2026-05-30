@@ -110,3 +110,75 @@ class TestImageViewModel:
         from plone.badisblocks.views.listing_block_view import _image_view_model
 
         assert _image_view_model({"@id": "http://x/y", "title": "t"}) is None
+
+
+class TestImageGalleryVariation:
+    """Test the imageGallery listing variation (Volto core listing variation)."""
+
+    layer = INTEGRATION_TESTING
+
+    @pytest.fixture(autouse=True)
+    def _setup(self, integration):
+        import base64
+
+        from plone.namedfile.file import NamedBlobImage
+
+        png = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        )
+        self.portal = integration["portal"]
+        # Real request: the summary serializer used by the listing needs set().
+        self.request = integration["request"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.folder = api.content.create(
+            container=self.portal, type="Folder", id="gallery", title="Gallery"
+        )
+        for i in range(3):
+            img = api.content.create(
+                container=self.folder, type="Image", id=f"img{i}", title=f"Image {i}"
+            )
+            img.image = NamedBlobImage(data=png, filename=f"img{i}.png")
+            img.reindexObject()
+
+    def _view(self, variation):
+        view = getMultiAdapter((self.folder, self.request), name="block-listing")
+        view.data = {
+            "@type": "listing",
+            "variation": variation,
+            "querystring": {
+                "query": [
+                    {
+                        "i": "path",
+                        "o": "plone.app.querystring.operation.string.absolutePath",
+                        "v": "/".join(self.folder.getPhysicalPath()),
+                    }
+                ],
+            },
+        }
+        return view
+
+    def test_is_image_gallery_flag(self):
+        assert self._view("imageGallery").is_image_gallery is True
+        assert self._view("default").is_image_gallery is False
+
+    def test_gallery_items_have_images(self):
+        view = self._view("imageGallery")
+        items = view.gallery_items
+        assert len(items) == 3
+        assert all(item["image"] for item in items)
+
+    def test_css_class_variation(self):
+        assert self._view("imageGallery").css_class == "block listing variation-imageGallery"
+
+    def test_renders_gallery_grid(self):
+        view = self._view("imageGallery")
+        html = view()
+        assert "image-gallery-items" in html
+        assert html.count("image-gallery-item") >= 3
+        # gallery uses a plain image grid, not the card markup
+        assert "card-summary" not in html
+
+    def test_default_variation_uses_card_list(self):
+        view = self._view("default")
+        html = view()
+        assert "image-gallery-items" not in html

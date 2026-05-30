@@ -13,8 +13,28 @@
   <p class="listing-empty"
      tal:condition="not:view/items">No results found.</p>
 
+  <!-- imageGallery variation: a grid of item images linking to the content. -->
+  <ul class="items image-gallery-items"
+      tal:condition="view/is_image_gallery"
+      tal:define="gallery view/gallery_items">
+    <li class="image-gallery-item"
+        tal:repeat="item gallery">
+      <a tal:attributes="href item/url; title item/title">
+        <img class="responsive"
+             loading="lazy"
+             tal:define="image item/image"
+             tal:attributes="src image/src;
+                            srcset image/srcset;
+                            sizes image/sizes;
+                            width image/width;
+                            height image/height;
+                            alt image/alt" />
+      </a>
+    </li>
+  </ul>
+
   <ul class="items"
-      tal:condition="view/items">
+      tal:condition="python:view.items and not view.is_image_gallery">
     <li tal:repeat="item view/items"
         tal:attributes="class python:view.item_class(item)">
       <div class="card">
