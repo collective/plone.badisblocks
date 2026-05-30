@@ -791,3 +791,215 @@ a.button:focus-visible {
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Separator block (@type separator)
+ *
+ * Mirrors @kitconcept/volto-separator-block: a div.line whose ::after draws the
+ * rule. volto-light-theme's styling hooks are reproduced as has--<key>--<value>
+ * classes: shortLine (a 165px line), align (justification) and blockWidth.
+ * ------------------------------------------------------------------------- */
+.block.separator {
+  margin-block: 2rem;
+}
+
+.block.separator .line {
+  display: grid;
+  justify-content: var(--bb-separator-align, stretch);
+}
+
+.block.separator .line::after {
+  content: "";
+  display: block;
+  width: 100%;
+  border-top: 1px solid currentColor;
+}
+
+.block.separator.has--align--left .line {
+  --bb-separator-align: start;
+}
+
+.block.separator.has--align--center .line {
+  --bb-separator-align: center;
+}
+
+.block.separator.has--align--right .line {
+  --bb-separator-align: end;
+}
+
+.block.separator.has--shortLine--true .line::after {
+  width: 165px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Heading block (@type heading)
+ *
+ * Mirrors @kitconcept/volto-heading-block: a standalone heading carrying its own
+ * anchor id (so a table of contents can link to it). Mostly inherits Barceloneta
+ * typography; we just own the block's vertical rhythm and alignment hook.
+ * ------------------------------------------------------------------------- */
+.block.heading {
+  margin-block: 2rem;
+}
+
+.block.heading .heading-wrapper .heading {
+  margin-block: 0;
+}
+
+.block.heading.has--align--center .heading-wrapper {
+  text-align: center;
+}
+
+.block.heading.has--align--right .heading-wrapper {
+  text-align: right;
+}
+
+/* ---------------------------------------------------------------------------
+ * Search block (@type search)
+ *
+ * Mirrors volto-light-theme's faceted search, rendered server-side as a plain
+ * GET form (text input + per-facet <select> + optional sort) above a listing of
+ * result cards. The form works without JavaScript; badisblocks.js enhances it to
+ * fetch results in place. The result cards reuse the listing block's card markup.
+ * ------------------------------------------------------------------------- */
+.block.search {
+  margin-block: 2rem;
+}
+
+.block.search > .headline {
+  margin-block: 0 1rem;
+}
+
+/* One filter bar: the search input, facets and sort sit on the same row as the
+ * Search/Reset actions, aligned to the controls' baseline. */
+.block.search .search-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.block.search .search-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1 1 16rem;
+}
+
+.block.search .search-input-label,
+.block.search .facet-title,
+.block.search .search-sort label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.block.search input[type="search"],
+.block.search select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  background-color: transparent;
+  color: inherit;
+}
+
+.block.search .search-sort {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.block.search .facet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.block.search .search-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.block.search .search-button,
+.block.search .reset-button {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  background-color: transparent;
+  color: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.block.search .search-block-results {
+  margin-block: 1.5rem 0;
+}
+
+.block.search .items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.block.search .listing-item,
+.block.search .listing-item .card,
+.block.search .listing-item .card-inner,
+.block.search .listing-item .card-summary {
+  margin: 0;
+}
+
+.block.search .listing-item .card-summary > * {
+  margin-block: 0;
+}
+
+.block.search .listing-item .headline {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.block.search .listing-item .title {
+  margin-block: 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.block.search .listing-item .title a {
+  text-decoration: none;
+}
+
+.block.search .listing-item .title a:hover,
+.block.search .listing-item .title a:focus-visible {
+  text-decoration: underline;
+}
+
+.block.search .listing-item .description {
+  margin-block: 0.5rem 0;
+}
+
+.block.search .listing-item .image-wrapper img {
+  display: block;
+  max-width: 200px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.block.search .no-results {
+  padding-block: 1rem;
+  font-style: italic;
+}
+
+/* While an AJAX filter request is in flight (badisblocks.js adds is-loading). */
+.block.search.is-loading .search-block-results {
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+

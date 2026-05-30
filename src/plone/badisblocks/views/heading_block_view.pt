@@ -1,0 +1,21 @@
+<tal:heading xmlns:tal="http://xml.zope.org/namespaces/tal"
+             tal:condition="view/text"
+   ><div tal:attributes="class view/css_class">
+  <div class="heading-wrapper">
+    <h2 tal:condition="python:view.tag == 'h2'"
+        tal:attributes="class view/heading_class; id view/anchor_id"
+        tal:content="view/text">Heading</h2>
+    <h3 tal:condition="python:view.tag == 'h3'"
+        tal:attributes="class view/heading_class; id view/anchor_id"
+        tal:content="view/text">Heading</h3>
+    <h4 tal:condition="python:view.tag == 'h4'"
+        tal:attributes="class view/heading_class; id view/anchor_id"
+        tal:content="view/text">Heading</h4>
+    <h5 tal:condition="python:view.tag == 'h5'"
+        tal:attributes="class view/heading_class; id view/anchor_id"
+        tal:content="view/text">Heading</h5>
+    <h6 tal:condition="python:view.tag == 'h6'"
+        tal:attributes="class view/heading_class; id view/anchor_id"
+        tal:content="view/text">Heading</h6>
+  </div>
+</div></tal:heading>

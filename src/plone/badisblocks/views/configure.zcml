@@ -171,4 +171,28 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-separator"
+      for="*"
+      class=".separator_block_view.SeparatorBlockView"
+      template="separator_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-heading"
+      for="*"
+      class=".heading_block_view.HeadingBlockView"
+      template="heading_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-search"
+      for="*"
+      class=".search_block_view.SearchBlockView"
+      template="search_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>

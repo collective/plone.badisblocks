@@ -1,0 +1,97 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="plone"
+     class="block search searchBlock-container"
+     data-search-block=""
+     tal:attributes="data-block-id view/block_id;
+                    data-block-url view/block_url">
+  <h2 class="headline"
+      tal:condition="view/headline"
+      tal:content="view/headline">Search</h2>
+
+  <form class="search-block-form" method="get"
+        tal:attributes="action view/form_action">
+    <div class="search-controls">
+      <div class="search-wrapper" tal:condition="view/show_search_input">
+        <label class="search-input-label"
+               tal:condition="view/search_input_prompt"
+               tal:content="view/search_input_prompt">Search</label>
+        <input type="search" name="SearchableText"
+               i18n:attributes="placeholder"
+               placeholder="Search"
+               tal:attributes="value view/search_text" />
+      </div>
+
+      <div class="facet" tal:repeat="facet view/facets">
+        <label class="facet-title" tal:content="facet/title">Facet</label>
+        <select tal:attributes="name facet/name;
+                               multiple python:'multiple' if facet['multiple'] else None">
+          <option value="" tal:condition="not:facet/multiple"
+                  i18n:translate="">All</option>
+          <option tal:repeat="option facet/options"
+                  tal:attributes="value option/value;
+                                 selected python:'selected' if option['selected'] else None"
+                  tal:content="option/label">option</option>
+        </select>
+      </div>
+
+      <div class="search-sort" tal:condition="view/show_sort">
+        <label i18n:translate="">Sort by</label>
+        <select name="sort_on">
+          <option value="" i18n:translate="">Relevance</option>
+          <option tal:repeat="option view/sort_options"
+                  tal:attributes="value option/value;
+                                 selected python:'selected' if option['selected'] else None"
+                  tal:content="option/label">label</option>
+        </select>
+      </div>
+
+      <div class="search-actions">
+        <button type="submit" class="search-button"
+                i18n:translate="">Search</button>
+        <a class="reset-button"
+           tal:attributes="href view/form_action"
+           i18n:translate="">Reset</a>
+      </div>
+    </div>
+  </form>
+
+  <div class="search-block-results">
+    <ul class="items" tal:condition="view/items">
+      <li class="listing-item" tal:repeat="item view/items">
+        <div class="card">
+          <div class="card-inner">
+            <div class="image-wrapper"
+                 tal:condition="item/image">
+              <img class="responsive"
+                   loading="lazy"
+                   tal:attributes="src item/image/src;
+                                  srcset item/image/srcset;
+                                  sizes item/image/sizes;
+                                  width item/image/width;
+                                  height item/image/height;
+                                  alt item/image/alt" />
+            </div>
+            <div class="card-summary">
+              <div class="headline"
+                   tal:condition="item/head_title"
+                   tal:content="item/head_title">head title</div>
+              <div class="title">
+                <a class="card-primary-link"
+                   tal:attributes="href item/url"
+                   tal:content="item/title">title</a>
+              </div>
+              <p class="description"
+                 tal:condition="item/description"
+                 tal:content="item/description">description</p>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <p class="no-results"
+       tal:condition="not:view/items"
+       i18n:translate="">No results found.</p>
+  </div>
+</div>
