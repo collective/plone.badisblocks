@@ -155,4 +155,20 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="block-eventMetadata"
+      for="*"
+      class=".event_block_view.EventBlockView"
+      template="event_block_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="block-eventCalendar"
+      for="*"
+      class=".event_calendar_block_view.EventCalendarBlockView"
+      template="event_calendar_block_view.pt"
+      permission="zope2.View"
+      />
+
 </configure>

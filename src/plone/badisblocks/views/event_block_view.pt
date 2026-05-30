@@ -1,0 +1,63 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="plone"
+     class="block eventMetadata">
+  <div class="details-container">
+    <div class="content-container">
+      <div class="event-details">
+        <div class="event-title">
+          <span class="event-heading" i18n:translate="">Start</span>
+          <div class="event-detail" tal:content="view/start">start date</div>
+          <div class="separator"></div>
+        </div>
+        <div class="event-title" tal:condition="view/show_end">
+          <span class="event-heading" i18n:translate="">End</span>
+          <div class="event-detail" tal:content="view/end">end date</div>
+          <div class="separator"></div>
+        </div>
+        <div class="event-title" tal:condition="view/location">
+          <span class="event-heading" i18n:translate="">Location</span>
+          <div class="event-detail" tal:content="view/location">location</div>
+        </div>
+      </div>
+
+      <div class="event-details">
+        <div class="event-title" tal:condition="view/event_url">
+          <span class="event-heading" i18n:translate="">Website</span>
+          <div class="event-detail">
+            <a class="event-url"
+               tal:attributes="href view/event_url"
+               tal:content="view/event_url">https://example.org</a>
+          </div>
+          <div class="separator"></div>
+        </div>
+        <div class="event-title" tal:condition="view/has_contact">
+          <span class="event-heading" i18n:translate="">Contact</span>
+          <div class="event-detail">
+            <p tal:condition="view/contact_name"
+               tal:content="view/contact_name">contact name</p>
+            <p tal:condition="view/contact_email">
+              <a tal:attributes="href string:mailto:${view/contact_email}"
+                 tal:content="view/contact_email">mail@example.org</a>
+            </p>
+            <p tal:condition="view/contact_phone">
+              <span i18n:translate="">Phone</span>
+              <a tal:attributes="href string:tel:${view/contact_phone}"
+                 tal:content="view/contact_phone">+49</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="event-button">
+      <a class="ics-download"
+         target="_blank"
+         rel="noreferrer"
+         tal:attributes="href view/ics_url">
+        <button class="event-btn"
+                type="button"
+                i18n:translate="">ICS Download</button>
+      </a>
+    </div>
+  </div>
+</div>

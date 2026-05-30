@@ -1,0 +1,88 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="plone"
+     class="block eventCalendar eventsearch"
+     data-event-calendar=""
+     tal:attributes="data-block-id view/block_id;
+                    data-block-url view/block_url">
+  <h2 class="headline"
+      tal:condition="view/headline"
+      tal:content="view/headline">Events</h2>
+
+  <form class="event-calendar-search" method="get"
+        tal:attributes="action view/form_action">
+    <div class="first-row">
+      <div class="date-range">
+        <label class="date-field">
+          <span i18n:translate="">From</span>
+          <input type="date" name="event_from"
+                 tal:attributes="value view/from_value" />
+        </label>
+        <span class="date-range-sep" aria-hidden="true">–</span>
+        <label class="date-field">
+          <span i18n:translate="">To</span>
+          <input type="date" name="event_to"
+                 tal:attributes="value view/to_value" />
+        </label>
+      </div>
+      <div class="search-wrapper">
+        <input type="search" name="event_search"
+               i18n:attributes="placeholder"
+               placeholder="Search"
+               tal:attributes="value view/search_text" />
+        <button type="submit" class="search-button"
+                i18n:translate="">Search</button>
+        <a class="reset-button"
+           tal:attributes="href view/form_action"
+           i18n:translate="">Reset</a>
+      </div>
+    </div>
+  </form>
+
+  <div class="event-calendar-results">
+    <div class="event-calendar items" tal:condition="view/events">
+      <div class="card-listing" tal:repeat="event view/events">
+        <a class="event-card"
+           tal:attributes="href event/url"
+           tal:omit-tag="not:event/url">
+          <span class="date-inset"
+                tal:attributes="class python:'date-inset has-end-date' if event['multi_day'] else 'date-inset'">
+            <span class="day" tal:content="event/start_day">01</span>
+            <span class="month" tal:content="event/start_month">Jan</span>
+            <tal:multi tal:condition="event/multi_day">
+              <span class="separator"></span>
+              <span class="day" tal:content="event/end_day">02</span>
+              <span class="month" tal:content="event/end_month">Jan</span>
+            </tal:multi>
+          </span>
+          <span class="event-summary">
+            <span class="headline calendar">
+              <span class="day" tal:content="event/header_date">date</span>
+              <span class="event-title"
+                    tal:condition="event/head_title"
+                    tal:content="event/head_title">kicker</span>
+            </span>
+            <span class="image-wrapper" tal:condition="event/image">
+              <img class="event-image" loading="lazy"
+                   tal:define="image event/image"
+                   tal:attributes="src image/src;
+                                  srcset image/srcset;
+                                  sizes image/sizes;
+                                  width image/width;
+                                  height image/height;
+                                  alt image/alt" />
+            </span>
+            <h3 class="title" tal:content="event/title">Event title</h3>
+            <p class="description"
+               tal:condition="event/description"
+               tal:content="event/description">description</p>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <p class="no-results"
+       tal:condition="not:view/events"
+       i18n:translate="">No events found.</p>
+  </div>
+</div>
