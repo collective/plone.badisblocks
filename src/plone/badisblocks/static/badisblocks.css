@@ -1003,3 +1003,177 @@ a.button:focus-visible {
   transition: opacity 0.15s ease;
 }
 
+/* ---------------------------------------------------------------------------
+ * Slider block (@type slider)
+ *
+ * Mirrors @kitconcept/volto-slider-block: a full-width slideshow of content
+ * teasers. Volto drives it with Embla (loop + autoplay); here each slide is a
+ * scroll-snap page (one slide wide) so it works without JS, and badisblocks.js
+ * adds the same arrow/dot navigation as the carousel (shared setupScroller).
+ * Each slide is a hero image with the title/description overlaid at the bottom.
+ * ------------------------------------------------------------------------- */
+.block.slider {
+  margin-block: 2rem;
+}
+
+.block.slider .slider-wrapper {
+  position: relative;
+}
+
+.block.slider .slider-viewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Before enhancement the scrollbar is the only affordance, so keep it. */
+  scrollbar-width: thin;
+}
+
+.block.slider .slider-wrapper.is-enhanced .slider-viewport {
+  scrollbar-width: none;
+}
+
+.block.slider .slider-wrapper.is-enhanced .slider-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.block.slider .slider-container {
+  display: flex;
+}
+
+/* One slide per viewport. */
+.block.slider .slider-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.block.slider .grid-teaser-item,
+.block.slider .teaser-item {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Image with the text overlaid at the bottom over a gradient. */
+.block.slider .teaser-item {
+  position: relative;
+}
+
+.block.slider .highlight-image-wrapper {
+  display: block;
+}
+
+.block.slider .highlight-image-wrapper img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.block.slider .teaser-item-title {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding: 2rem 1.5rem 1.5rem;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  color: #fff;
+}
+
+/* When a slide has no image, drop the absolute overlay so the text still shows. */
+.block.slider .teaser-item:not(:has(.highlight-image-wrapper)) .teaser-item-title {
+  position: static;
+  padding: 1rem 0 0;
+  background: none;
+  color: inherit;
+}
+
+.block.slider .teaser-item-title .supertitle {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.block.slider .teaser-item-title h2 {
+  margin-block: 0.25rem 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.block.slider .teaser-item-title p {
+  margin-block: 0.5rem 0;
+}
+
+/* Arrows and dots are only meaningful once JS drives the scroll; hide them
+ * until the wrapper is enhanced. */
+.block.slider .slider-button,
+.block.slider .slider-dots {
+  display: none;
+}
+
+.block.slider .slider-wrapper.is-enhanced .slider-button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1a1a1a;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.block.slider .slider-button:hover {
+  background: #fff;
+}
+
+.block.slider .slider-button[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.block.slider .slider-button-prev {
+  left: 8px;
+}
+
+.block.slider .slider-button-next {
+  right: 8px;
+}
+
+.block.slider .slider-button .icon {
+  width: auto;
+  height: 36px;
+  fill: currentColor;
+}
+
+.block.slider .slider-wrapper.is-enhanced .slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-block-start: 1rem;
+}
+
+.block.slider .slider-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.block.slider .slider-dot.is-active {
+  background: rgba(0, 0, 0, 0.7);
+}
+

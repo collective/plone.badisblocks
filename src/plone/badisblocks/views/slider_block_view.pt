@@ -1,0 +1,76 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="plone"
+     tal:attributes="class view/css_class"
+     tal:define="count view/slide_count">
+  <div class="slider-wrapper"
+       tal:condition="count">
+    <button class="slider-button slider-button-prev"
+            type="button"
+            tal:condition="python: count > 1"
+            i18n:attributes="aria-label"
+            aria-label="Previous slide">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"
+           class="icon" aria-hidden="true">
+        <path fill-rule="evenodd"
+              d="M21.293 9.293 22.707 10.707 15.414 18 22.707 25.293 21.293 26.707 12.586 18z" />
+      </svg>
+    </button>
+    <button class="slider-button slider-button-next"
+            type="button"
+            tal:condition="python: count > 1"
+            i18n:attributes="aria-label"
+            aria-label="Next slide">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"
+           class="icon" aria-hidden="true">
+        <path fill-rule="evenodd"
+              d="M14.707 26.707 13.293 25.293 20.586 18 13.293 10.707 14.707 9.293 23.414 18z" />
+      </svg>
+    </button>
+    <div class="slider-viewport">
+      <div class="slider-container">
+        <div class="slider-slide"
+             tal:repeat="slide view/slides">
+          <div class="grid-teaser-item top">
+            <a class="teaser-item top"
+               tal:attributes="href slide/href;
+                              target slide/target;
+                              rel slide/rel"
+               tal:omit-tag="not:slide/href">
+              <div class="highlight-image-wrapper gradient"
+                   tal:condition="slide/image">
+                <img loading="lazy"
+                     tal:define="image slide/image"
+                     tal:attributes="src image/src;
+                                    srcset image/srcset;
+                                    sizes image/sizes;
+                                    width image/width;
+                                    height image/height;
+                                    alt image/alt" />
+              </div>
+              <div class="teaser-item-title">
+                <div class="title">
+                  <span class="supertitle"
+                        tal:condition="slide/head_title"
+                        tal:content="slide/head_title">Kicker</span>
+                  <h2 tal:condition="slide/title"
+                      tal:content="slide/title">Slide title</h2>
+                </div>
+                <p tal:condition="slide/description"
+                   tal:content="slide/description">Slide description</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slider-dots"
+         tal:condition="python: count > 1">
+      <button class="slider-dot"
+              type="button"
+              tal:repeat="n python:range(count)"
+              i18n:attributes="aria-label"
+              tal:attributes="aria-label python:'Go to slide %d' % (n + 1)"></button>
+    </div>
+  </div>
+</div>
